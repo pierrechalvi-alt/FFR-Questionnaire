@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root{
+  --bleu-ffr:#003366;
+  --accent:#0074d9;
+  --gris-clair:#f7f8fa;
+  --blanc:#ffffff;
+  --gris-texte:#333;
+  --surbrillance: rgba(0,102,204,0.08);
+}
+*{box-sizing:border-box}
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--gris-clair);
+  margin:0;color:var(--gris-texte);
+}
+header{
+  background:var(--bleu-ffr);color:var(--blanc);text-align:center;padding:28px 10px;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+header h1{margin:0;font-weight:600;font-size:1.6rem}
+header p{margin:6px 0 0;font-weight:300;opacity:.9}
+
+main{max-width:980px;margin:22px auto;padding:0 16px}
+.card{
+  background:var(--blanc);border-radius:10px;padding:18px;margin-bottom:18px;
+  box-shadow:0 3px 8px rgba(0,0,0,.04); transition: box-shadow .25s, background .25s;
+}
+.card:hover{ box-shadow:0 6px 16px rgba(0,0,0,.08) }
+h2{color:var(--bleu-ffr);margin:0 0 12px}
+h3{margin-top:0;color:var(--bleu-ffr)}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:10px 18px;margin:8px 0 12px}
+.checkbox-group label{cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:400;
+  background:var(--surbrillance); padding:6px 10px; border-radius:8px;
+}
+input[type="checkbox"],input[type="radio"]{transform:scale(1.05);accent-color:var(--accent)}
+
+input[type="text"], input[type="email"], textarea{
+  width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:8px 0 12px;font-family:inherit
+}
+
+button{
+  background:var(--bleu-ffr);color:var(--blanc);border:none;padding:12px 20px;border-radius:8px;
+  cursor:pointer;font-weight:600;font-size:1rem;
+}
+button:hover{background:var(--accent);transform:translateY(-2px)}
+
+.req{color:#d00;font-weight:600;margin-left:6px}
+
+.other-wrap{margin:8px 0}
+.other-wrap-inline{margin:6px 0 0}
+
+#resultMessage{min-height:22px}
+
+/* Progress */
+#progress-container{width:100%;height:12px;background:#e9eef5;border-radius:10px;overflow:hidden}
+#progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--bleu-ffr));transition:width .25s}
+#progress-text{text-align:right;color:var(--bleu-ffr);font-weight:600;margin:8px 0 18px}
+
+/* Slide style */
+.slide{overflow:hidden;max-height:0;opacity:0;transition:max-height .35s ease,opacity .3s}
+.slide.show{max-height:2000px;opacity:1}
+
+/* small screens */
+@media (max-width:600px){
+  main{padding:0 12px}
+  header h1{font-size:1.2rem}
+}

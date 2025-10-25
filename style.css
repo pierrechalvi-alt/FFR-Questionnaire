@@ -1,0 +1,11 @@
+:root{--bleu-ffr:#003366;--accent:#0074d9}
+body{font-family:'Poppins',sans-serif;background:#f7f8fa;color:#333;margin:0}
+header{background:var(--bleu-ffr);color:#fff;text-align:center;padding:24px}
+#progress-container{height:22px;background:#eaeaea;border-radius:14px;overflow:hidden}
+#progress-bar{height:100%;background:var(--accent);width:0;transition:width .4s}
+#progress-text{text-align:right;font-weight:600;margin-top:4px;color:var(--bleu-ffr)}
+.card{background:#fff;border-radius:10px;margin:18px auto;padding:20px;max-width:1000px}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:10px}
+.other-input{margin-top:6px;display:block}
+button{background:var(--bleu-ffr);color:#fff;border:none;padding:12px 20px;border-radius:8px;cursor:pointer}
+button:hover{background:var(--accent)}

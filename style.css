@@ -1,0 +1,38 @@
+/* V20 – Style global */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root{
+  --bleu-ffr:#003366;
+  --gris-clair:#f7f8fa;
+  --gris-texte:#444;
+  --blanc:#fff;
+  --accent:#0074d9;
+}
+
+*{box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:var(--gris-clair);color:var(--gris-texte);margin:0}
+header{background:var(--bleu-ffr);color:var(--blanc);padding:28px 12px;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,.08)}
+h1{margin:0 0 6px 0;font-weight:600}
+main{max-width:1000px;margin:26px auto;padding:0 16px}
+.card{background:var(--blanc);border-radius:10px;padding:22px;margin:18px 0;box-shadow:0 3px 8px rgba(0,0,0,.06)}
+h2{color:var(--bleu-ffr);margin-top:0}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:10px 22px;margin:10px 0 16px}
+.checkbox-group label{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:6px;background:#eef2f7}
+input[type="text"]{padding:10px;border:1px solid #ddd;border-radius:8px;width:100%}
+.small{max-width:320px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+.req{color:#d11c1c}
+#progress-container{height:20px;background:#e4e8ee;border-radius:16px;overflow:hidden;position:relative;margin-bottom:18px}
+#progress-bar{height:100%;width:0;background:var(--accent);transition:width .4s ease}
+#progress-text{margin-top:6px;font-size:.9rem;color:var(--bleu-ffr);font-weight:600}
+.submit-section{text-align:center}
+button{background:var(--bleu-ffr);color:var(--blanc);border:none;border-radius:8px;padding:12px 22px;font-size:1rem;cursor:pointer}
+button:hover{background:var(--accent)}
+.fade-in{opacity:0;transform:translateY(12px);animation:fade .5s ease forwards}
+@keyframes fade{to{opacity:1;transform:none}}
+.subcard{border:1px solid #e9edf3;border-radius:8px;padding:16px;margin:12px 0}
+.subcard.active{box-shadow:0 0 12px rgba(0,102,204,.18);border-color:rgba(0,102,204,.28);background:rgba(0,102,204,.03)}
+.slide{overflow:hidden;transition:max-height .35s ease,opacity .35s ease;max-height:0;opacity:0}
+.slide.show{max-height:2000px;opacity:1}
+footer{padding:20px;text-align:center;color:#777}
+@media(max-width:720px){.grid-2{grid-template-columns:1fr}}

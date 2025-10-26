@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
   toggleOther("equipe", "equipe-autre");
 
   // --- Constantes
-  const headNeck = ["Tête / Rachis cervical"];
   const headNeckTitle = ["Tête / Rachis cervical"];
   const lowerBody = ["Hanche","Genou","Cheville / Pied"];
 

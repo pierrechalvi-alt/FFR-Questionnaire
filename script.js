@@ -694,10 +694,13 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
          <h4 class="subtle">Décélération</h4>
-         <div class="checkbox-group">
-           <label><input type="checkbox" value="Oui"> Oui</label>
-           <label><input type="checkbox" value="Non"> Non</label>
-         </div>
+<div class="checkbox-group decel-group">
+  <label><input type="radio" name="decel-yn" value="Oui" required> Oui</label>
+  <label><input type="radio" name="decel-yn" value="Non"> Non</label>
+</div>
+<div class="slide" id="decel-detail">
+  <input type="text" id="decel-precisez" class="other-input small" placeholder="Précisez le test de décélération" style="display:none;">
+</div>
 
         <label>Outils</label>
         <div class="checkbox-group course-tools">
@@ -718,10 +721,22 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     const yn = d.querySelectorAll("input[name='course-yn']");
     const det = d.querySelector("#course-detail");
-    yn.forEach(r=>r.addEventListener("change",()=>{
-      det.classList.toggle("show", r.value==="Oui" && r.checked);
-      toggleCombatBlock();
-    }));
+   // --- Gestion Décélération Oui/Non + champ obligatoire
+const decelRadios = d.querySelectorAll("input[name='decel-yn']");
+const decelInput = d.querySelector("#decel-precisez");
+decelRadios.forEach(r => {
+  r.addEventListener("change", () => {
+    if (r.value === "Oui" && r.checked) {
+      decelInput.style.display = "block";
+      decelInput.required = true;
+    } else if (r.value === "Non" && r.checked) {
+      decelInput.style.display = "none";
+      decelInput.required = false;
+      decelInput.value = "";
+    }
+  });
+});
+
     d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
     return d;
   };
@@ -1038,7 +1053,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (barAutreCb && barAutreCb.checked && !byId("barrieres-autre").value.trim()) return "Merci de préciser les champs 'Autre' sélectionnés.";
     const raiAutreCb = byId("raisons")?.querySelector("input[value='Autre']");
     if (raiAutreCb && raiAutreCb.checked && !byId("raisons-autre").value.trim()) return "Merci de préciser les champs 'Autre' sélectionnés.";
-
+// --- Vérif Décélération obligatoire si Oui
+const decelYes = document.querySelector("input[name='decel-yn'][value='Oui']");
+if (decelYes && decelYes.checked) {
+  const decelText = byId("decel-precisez")?.value.trim();
+  if (!decelText) return "Merci de préciser le test de décélération.";
+}
     return "";
   };
 

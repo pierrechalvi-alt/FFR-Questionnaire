@@ -651,95 +651,105 @@ document.addEventListener("DOMContentLoaded", () => {
     return d;
   };
 
-  const buildCourseBlock = () => {
-    const d = document.createElement("div");
-    d.className = "subcard";
-    d.id = "global-course";
-    d.innerHTML = `
-      <h3>Tests de course</h3>
-      <label>Effectuez-vous des tests de course ?</label>
-      <div class="checkbox-group yn">
-        <label><input type="radio" name="course-yn" value="Oui"> Oui</label>
-        <label><input type="radio" name="course-yn" value="Non"> Non</label>
+ const buildCourseBlock = () => {
+  const d = document.createElement("div");
+  d.className = "subcard";
+  d.id = "global-course";
+  d.innerHTML = `
+    <h3>Tests de course</h3>
+    <label>Effectuez-vous des tests de course ?</label>
+    <div class="checkbox-group yn">
+      <label><input type="radio" name="course-yn" value="Oui"> Oui</label>
+      <label><input type="radio" name="course-yn" value="Non"> Non</label>
+    </div>
+
+    <div class="slide" id="course-detail">
+      <label>Quels tests de course utilisez-vous ?</label>
+
+      <h4 class="subtle">Énergétiques</h4>
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="Yoyo IR test 1"> Yoyo IR test 1</label>
+        <label><input type="checkbox" value="Bronco"> Bronco</label>
+        <label><input type="checkbox" value="Broken Bronco"> Broken Bronco</label>
+        <label><input type="checkbox" value="Luc Léger"> Luc Léger</label>
+        <label><input type="checkbox" value="VAMEVAL"> VAMEVAL</label>
+        <label><input type="checkbox" value="Autre"> Autre</label>
       </div>
-      <div class="slide" id="course-detail">
-        <label>Quels tests de course utilisez-vous ?</label>
 
-        <h4 class="subtle">Énergétiques</h4>
-        <div class="checkbox-group">
-          <label><input type="checkbox" value="Yoyo IR test 1"> Yoyo IR test 1</label>
-          <label><input type="checkbox" value="Bronco"> Bronco</label>
-          <label><input type="checkbox" value="Broken Bronco"> Broken Bronco</label>
-          <label><input type="checkbox" value="Luc Léger"> Luc Léger</label>
-          <label><input type="checkbox" value="VAMEVAL"> VAMEVAL</label>
-          <label><input type="checkbox" value="Autre"> Autre</label>
-        </div>
-
-        <h4 class="subtle">Vitesse</h4>
-        <div class="checkbox-group">
-          <label><input type="checkbox" value="Sprint 10m"> Sprint 10m</label>
-          <label><input type="checkbox" value="Sprint 20m"> Sprint 20m</label>
-          <label><input type="checkbox" value="Sprint 30m"> Sprint 30m</label>
-          <label><input type="checkbox" value="Vmax"> Vmax</label>
-          <label><input type="checkbox" value="Autre"> Autre</label>
-        </div>
-
-        <h4 class="subtle">Changement de direction (COD)</h4>
-        <div class="checkbox-group">
-          <label><input type="checkbox" value="505"> 505</label>
-          <label><input type="checkbox" value="T-Test"> T-Test</label>
-          <label><input type="checkbox" value="Illinois"> Illinois</label>
-          <label><input type="checkbox" value="ZigZag test"> ZigZag test</label>
-          <label><input type="checkbox" value="Autre"> Autre</label>
-        </div>
-
-         <h4 class="subtle">Décélération</h4>
-<div class="checkbox-group decel-group">
-  <label><input type="radio" name="decel-yn" value="Oui" required> Oui</label>
-  <label><input type="radio" name="decel-yn" value="Non"> Non</label>
-</div>
-<div class="slide" id="decel-detail">
-  <input type="text" id="decel-precisez" class="other-input small" placeholder="Précisez le test de décélération" style="display:none;">
-</div>
-
-        <label>Outils</label>
-        <div class="checkbox-group course-tools">
-          <label><input type="checkbox" value="Chronomètre"> Chronomètre</label>
-          <label><input type="checkbox" value="Cellules"> Cellules</label>
-          <label><input type="checkbox" value="GPS"> GPS</label>
-          <label><input type="checkbox" value="1080 Sprint"> 1080 Sprint</label>
-          <label><input type="checkbox" value="Autre"> Autre</label>
-        </div>
-
-        <label>Critères d’évaluation</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" value="Moyenne par poste"> Moyenne par poste</label>
-          <label><input type="checkbox" value="Valeur de référence individuelle"> Valeur de référence individuelle</label>
-          <label><input type="checkbox" value="Autre"> Autre</label>
-        </div>
+      <h4 class="subtle">Vitesse</h4>
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="Sprint 10m"> Sprint 10m</label>
+        <label><input type="checkbox" value="Sprint 20m"> Sprint 20m</label>
+        <label><input type="checkbox" value="Sprint 30m"> Sprint 30m</label>
+        <label><input type="checkbox" value="Vmax"> Vmax</label>
+        <label><input type="checkbox" value="Autre"> Autre</label>
       </div>
-    `;
-    const yn = d.querySelectorAll("input[name='course-yn']");
-    const det = d.querySelector("#course-detail");
-   // --- Gestion Décélération Oui/Non + champ obligatoire
-const decelRadios = d.querySelectorAll("input[name='decel-yn']");
-const decelInput = d.querySelector("#decel-precisez");
-decelRadios.forEach(r => {
-  r.addEventListener("change", () => {
-    if (r.value === "Oui" && r.checked) {
-      decelInput.style.display = "block";
-      decelInput.required = true;
-    } else if (r.value === "Non" && r.checked) {
-      decelInput.style.display = "none";
-      decelInput.required = false;
-      decelInput.value = "";
-    }
+
+      <h4 class="subtle">Changement de direction (COD)</h4>
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="505"> 505</label>
+        <label><input type="checkbox" value="T-Test"> T-Test</label>
+        <label><input type="checkbox" value="Illinois"> Illinois</label>
+        <label><input type="checkbox" value="ZigZag test"> ZigZag test</label>
+        <label><input type="checkbox" value="Autre"> Autre</label>
+      </div>
+
+      <h4 class="subtle">Décélération</h4>
+      <div class="checkbox-group decel-group">
+        <label><input type="radio" name="decel-yn" value="Oui" required> Oui</label>
+        <label><input type="radio" name="decel-yn" value="Non"> Non</label>
+      </div>
+      <div id="decel-detail" class="slide">
+        <input type="text" id="decel-precisez" class="other-input small" placeholder="Précisez le test de décélération" style="display:none;">
+      </div>
+
+      <label>Outils</label>
+      <div class="checkbox-group course-tools">
+        <label><input type="checkbox" value="Chronomètre"> Chronomètre</label>
+        <label><input type="checkbox" value="Cellules"> Cellules</label>
+        <label><input type="checkbox" value="GPS"> GPS</label>
+        <label><input type="checkbox" value="1080 Sprint"> 1080 Sprint</label>
+        <label><input type="checkbox" value="Autre"> Autre</label>
+      </div>
+
+      <label>Critères d’évaluation</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="Moyenne par poste"> Moyenne par poste</label>
+        <label><input type="checkbox" value="Valeur de référence individuelle"> Valeur de référence individuelle</label>
+        <label><input type="checkbox" value="Autre"> Autre</label>
+      </div>
+    </div>
+  `;
+
+  // --- Gestion du slide principal (oui/non course)
+  const yn = d.querySelectorAll("input[name='course-yn']");
+  const det = d.querySelector("#course-detail");
+  yn.forEach(r => r.addEventListener("change", () => {
+    det.classList.toggle("show", r.value === "Oui" && r.checked);
+    toggleCombatBlock();
+  }));
+
+  // --- Gestion Décélération Oui/Non + champ obligatoire
+  const decelRadios = d.querySelectorAll("input[name='decel-yn']");
+  const decelInput = d.querySelector("#decel-precisez");
+  decelRadios.forEach(r => {
+    r.addEventListener("change", () => {
+      if (r.value === "Oui" && r.checked) {
+        decelInput.style.display = "block";
+        decelInput.required = true;
+      } else if (r.value === "Non" && r.checked) {
+        decelInput.style.display = "none";
+        decelInput.required = false;
+        decelInput.value = "";
+      }
+    });
   });
-});
 
-    d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
-    return d;
-  };
+  // --- Champs "Autre"
+  d.querySelectorAll(".checkbox-group").forEach(g => ensureOtherText(g));
+
+  return d;
+};
 
   const buildGlobalMIBlock = () => {
     const d = document.createElement("div");

@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Paramètres + unités
   const paramsForce = ["Force max (N)","Force moyenne (N)","Force relative (N/kg)","Puissance (W/kg)","RFD (Rate of Force Development)","Angle du pic de force (°)","Endurance (s)"];
-  const criteriaGeneric = ["Ratio agoniste/antagoniste","Ratio droite/gauche","Valeur de référence individuelle","Autre"];
+  const criteriaGeneric = ["Ratio agoniste/antagoniste","Comparaison droite/gauche","Valeur de référence individuelle","Autre"];
 
   // Proprio / questionnaires (extraits)
   const proprioByZone = {
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const questionnairesByZone = {
     "Genou":["KOOS","IKDC","Lysholm","Tegner","ACL-RSI","KOS-ADLS","LEFS","Autre"],
     "Hanche":["HAGOS","iHOT-12","HOOS","HOS","Autre"],
-    "Épaule":["QuickDASH","DASH","SIRSI (épaule)","ASES","SPADI","Oxford Shoulder Score","Autre"],
+    "Épaule":["QuickDASH","DASH","SIRSI","ASES","SPADI","Oxford Shoulder Score","Autre"],
     "Coude":["Oxford Elbow Score","MEPS","DASH","QuickDASH","Autre"],
     "Poignet / Main":["PRWE","DASH","QuickDASH","Boston Carpal Tunnel","Autre"],
     "Cheville / Pied":["CAIT","FAAM-ADL","FAAM-Sport","FAOS","FFI","Autre"],
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Isokinétisme
   const isokineticSpeeds = ["30°/s","60°/s","120°/s","180°/s","Autre"];
-  const isokineticModes = ["Concentrique","Excentrique","Isométrique","Combiné"];
+  const isokineticModes = ["Concentrique","Excentrique"];
 
   // Zones
   const zoneContainer = byId("zoneQuestions");
@@ -629,6 +629,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="checkbox-group jump-tools">
           <label><input type="checkbox" value="Plateforme de force"> Plateforme de force</label>
           <label><input type="checkbox" value="Centimétrie"> Centimétrie</label>
+           <label><input type="checkbox" value="Centimétrie"> Encodeur linéaire</label>
           <label><input type="checkbox" value="Sans outil"> Sans outil</label>
           <label><input type="checkbox" value="Autre"> Autre</label>
         </div>
@@ -691,6 +692,12 @@ document.addEventListener("DOMContentLoaded", () => {
           <label><input type="checkbox" value="ZigZag test"> ZigZag test</label>
           <label><input type="checkbox" value="Autre"> Autre</label>
         </div>
+
+         <h4 class="subtle">Décélération</h4>
+         <div class="checkbox-group">
+           <label><input type="checkbox" value="Oui"> Oui</label>
+           <label><input type="checkbox" value="Non"> Non</label>
+         </div>
 
         <label>Outils</label>
         <div class="checkbox-group course-tools">

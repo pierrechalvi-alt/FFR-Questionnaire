@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Paramètres + unités
   const paramsForce = ["Force max (N)","Force moyenne (N)","Force relative (N/kg)","Puissance (W/kg)","RFD (Rate of Force Development)","Angle du pic de force (°)","Endurance (s)"];
-  const criteriaGeneric = ["Ratio agoniste/antagoniste","Comparaison droite/gauche","Valeur de référence individuelle","Autre"];
+  const criteriaGeneric = ["Ratio agoniste/antagoniste","Ratio droite/gauche","Valeur de référence individuelle","Autre"];
 
   // Proprio / questionnaires (extraits)
   const proprioByZone = {
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const questionnairesByZone = {
     "Genou":["KOOS","IKDC","Lysholm","Tegner","ACL-RSI","KOS-ADLS","LEFS","Autre"],
     "Hanche":["HAGOS","iHOT-12","HOOS","HOS","Autre"],
-    "Épaule":["QuickDASH","DASH","SIRSI","ASES","SPADI","Oxford Shoulder Score","Autre"],
+    "Épaule":["QuickDASH","DASH","SIRSI (épaule)","ASES","SPADI","Oxford Shoulder Score","Autre"],
     "Coude":["Oxford Elbow Score","MEPS","DASH","QuickDASH","Autre"],
     "Poignet / Main":["PRWE","DASH","QuickDASH","Boston Carpal Tunnel","Autre"],
     "Cheville / Pied":["CAIT","FAAM-ADL","FAAM-Sport","FAOS","FFI","Autre"],
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Isokinétisme
   const isokineticSpeeds = ["30°/s","60°/s","120°/s","180°/s","Autre"];
-  const isokineticModes = ["Concentrique","Excentrique"];
+  const isokineticModes = ["Concentrique","Excentrique","Isométrique","Combiné"];
 
   // Zones
   const zoneContainer = byId("zoneQuestions");
@@ -629,7 +629,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="checkbox-group jump-tools">
           <label><input type="checkbox" value="Plateforme de force"> Plateforme de force</label>
           <label><input type="checkbox" value="Centimétrie"> Centimétrie</label>
-           <label><input type="checkbox" value="Centimétrie"> Encodeur linéaire</label>
           <label><input type="checkbox" value="Sans outil"> Sans outil</label>
           <label><input type="checkbox" value="Autre"> Autre</label>
         </div>
@@ -651,105 +650,74 @@ document.addEventListener("DOMContentLoaded", () => {
     return d;
   };
 
- const buildCourseBlock = () => {
-  const d = document.createElement("div");
-  d.className = "subcard";
-  d.id = "global-course";
-  d.innerHTML = `
-    <h3>Tests de course</h3>
-    <label>Effectuez-vous des tests de course ?</label>
-    <div class="checkbox-group yn">
-      <label><input type="radio" name="course-yn" value="Oui"> Oui</label>
-      <label><input type="radio" name="course-yn" value="Non"> Non</label>
-    </div>
-
-    <div class="slide" id="course-detail">
-      <label>Quels tests de course utilisez-vous ?</label>
-
-      <h4 class="subtle">Énergétiques</h4>
-      <div class="checkbox-group">
-        <label><input type="checkbox" value="Yoyo IR test 1"> Yoyo IR test 1</label>
-        <label><input type="checkbox" value="Bronco"> Bronco</label>
-        <label><input type="checkbox" value="Broken Bronco"> Broken Bronco</label>
-        <label><input type="checkbox" value="Luc Léger"> Luc Léger</label>
-        <label><input type="checkbox" value="VAMEVAL"> VAMEVAL</label>
-        <label><input type="checkbox" value="Autre"> Autre</label>
+  const buildCourseBlock = () => {
+    const d = document.createElement("div");
+    d.className = "subcard";
+    d.id = "global-course";
+    d.innerHTML = `
+      <h3>Tests de course</h3>
+      <label>Effectuez-vous des tests de course ?</label>
+      <div class="checkbox-group yn">
+        <label><input type="radio" name="course-yn" value="Oui"> Oui</label>
+        <label><input type="radio" name="course-yn" value="Non"> Non</label>
       </div>
+      <div class="slide" id="course-detail">
+        <label>Quels tests de course utilisez-vous ?</label>
 
-      <h4 class="subtle">Vitesse</h4>
-      <div class="checkbox-group">
-        <label><input type="checkbox" value="Sprint 10m"> Sprint 10m</label>
-        <label><input type="checkbox" value="Sprint 20m"> Sprint 20m</label>
-        <label><input type="checkbox" value="Sprint 30m"> Sprint 30m</label>
-        <label><input type="checkbox" value="Vmax"> Vmax</label>
-        <label><input type="checkbox" value="Autre"> Autre</label>
+        <h4 class="subtle">Énergétiques</h4>
+        <div class="checkbox-group">
+          <label><input type="checkbox" value="Yoyo IR test 1"> Yoyo IR test 1</label>
+          <label><input type="checkbox" value="Bronco"> Bronco</label>
+          <label><input type="checkbox" value="Broken Bronco"> Broken Bronco</label>
+          <label><input type="checkbox" value="Luc Léger"> Luc Léger</label>
+          <label><input type="checkbox" value="VAMEVAL"> VAMEVAL</label>
+          <label><input type="checkbox" value="Autre"> Autre</label>
+        </div>
+
+        <h4 class="subtle">Vitesse</h4>
+        <div class="checkbox-group">
+          <label><input type="checkbox" value="Sprint 10m"> Sprint 10m</label>
+          <label><input type="checkbox" value="Sprint 20m"> Sprint 20m</label>
+          <label><input type="checkbox" value="Sprint 30m"> Sprint 30m</label>
+          <label><input type="checkbox" value="Vmax"> Vmax</label>
+          <label><input type="checkbox" value="Autre"> Autre</label>
+        </div>
+
+        <h4 class="subtle">Changement de direction (COD)</h4>
+        <div class="checkbox-group">
+          <label><input type="checkbox" value="505"> 505</label>
+          <label><input type="checkbox" value="T-Test"> T-Test</label>
+          <label><input type="checkbox" value="Illinois"> Illinois</label>
+          <label><input type="checkbox" value="ZigZag test"> ZigZag test</label>
+          <label><input type="checkbox" value="Autre"> Autre</label>
+        </div>
+
+        <label>Outils</label>
+        <div class="checkbox-group course-tools">
+          <label><input type="checkbox" value="Chronomètre"> Chronomètre</label>
+          <label><input type="checkbox" value="Cellules"> Cellules</label>
+          <label><input type="checkbox" value="GPS"> GPS</label>
+          <label><input type="checkbox" value="1080 Sprint"> 1080 Sprint</label>
+          <label><input type="checkbox" value="Autre"> Autre</label>
+        </div>
+
+        <label>Critères d’évaluation</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" value="Moyenne par poste"> Moyenne par poste</label>
+          <label><input type="checkbox" value="Valeur de référence individuelle"> Valeur de référence individuelle</label>
+          <label><input type="checkbox" value="Autre"> Autre</label>
+        </div>
       </div>
-
-      <h4 class="subtle">Changement de direction (COD)</h4>
-      <div class="checkbox-group">
-        <label><input type="checkbox" value="505"> 505</label>
-        <label><input type="checkbox" value="T-Test"> T-Test</label>
-        <label><input type="checkbox" value="Illinois"> Illinois</label>
-        <label><input type="checkbox" value="ZigZag test"> ZigZag test</label>
-        <label><input type="checkbox" value="Autre"> Autre</label>
-      </div>
-
-      <h4 class="subtle">Décélération</h4>
-      <div class="checkbox-group decel-group">
-        <label><input type="radio" name="decel-yn" value="Oui" required> Oui</label>
-        <label><input type="radio" name="decel-yn" value="Non"> Non</label>
-      </div>
-      <div id="decel-detail" class="slide">
-        <input type="text" id="decel-precisez" class="other-input small" placeholder="Précisez le test de décélération" style="display:none;">
-      </div>
-
-      <label>Outils</label>
-      <div class="checkbox-group course-tools">
-        <label><input type="checkbox" value="Chronomètre"> Chronomètre</label>
-        <label><input type="checkbox" value="Cellules"> Cellules</label>
-        <label><input type="checkbox" value="GPS"> GPS</label>
-        <label><input type="checkbox" value="1080 Sprint"> 1080 Sprint</label>
-        <label><input type="checkbox" value="Autre"> Autre</label>
-      </div>
-
-      <label>Critères d’évaluation</label>
-      <div class="checkbox-group">
-        <label><input type="checkbox" value="Moyenne par poste"> Moyenne par poste</label>
-        <label><input type="checkbox" value="Valeur de référence individuelle"> Valeur de référence individuelle</label>
-        <label><input type="checkbox" value="Autre"> Autre</label>
-      </div>
-    </div>
-  `;
-
-  // --- Gestion du slide principal (oui/non course)
-  const yn = d.querySelectorAll("input[name='course-yn']");
-  const det = d.querySelector("#course-detail");
-  yn.forEach(r => r.addEventListener("change", () => {
-    det.classList.toggle("show", r.value === "Oui" && r.checked);
-    toggleCombatBlock();
-  }));
-
-  // --- Gestion Décélération Oui/Non + champ obligatoire
-  const decelRadios = d.querySelectorAll("input[name='decel-yn']");
-  const decelInput = d.querySelector("#decel-precisez");
-  decelRadios.forEach(r => {
-    r.addEventListener("change", () => {
-      if (r.value === "Oui" && r.checked) {
-        decelInput.style.display = "block";
-        decelInput.required = true;
-      } else if (r.value === "Non" && r.checked) {
-        decelInput.style.display = "none";
-        decelInput.required = false;
-        decelInput.value = "";
-      }
-    });
-  });
-
-  // --- Champs "Autre"
-  d.querySelectorAll(".checkbox-group").forEach(g => ensureOtherText(g));
-
-  return d;
-};
+    `;
+    const yn = d.querySelectorAll("input[name='course-yn']");
+    const det = d.querySelector("#course-detail");
+    yn.forEach(r=>r.addEventListener("change",()=>{
+      det.classList.toggle("show", r.value==="Oui" && r.checked);
+      toggleCombatBlock();
+    }));
+    d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
+    return d;
+  };
 
   const buildGlobalMIBlock = () => {
     const d = document.createElement("div");
@@ -786,7 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="checkbox-group">
           <label><input type="checkbox" value="Moyenne du groupe"> Moyenne du groupe</label>
           <label><input type="checkbox" value="Ratio / poids du corps"> Ratio / poids du corps</label>
-          <label><input type="checkbox" value="Comparaison droite/gauche"> Ratio droite/gauche</label>
+          <label><input type="checkbox" value="Ratio droite/gauche"> Ratio droite/gauche</label>
           <label><input type="checkbox" value="Valeur de référence individuelle"> Valeur de référence individuelle</label>
           <label><input type="checkbox" value="Autre"> Autre</label>
         </div>
@@ -837,7 +805,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="checkbox-group">
           <label><input type="checkbox" value="Moyenne du groupe"> Moyenne du groupe</label>
           <label><input type="checkbox" value="Ratio / poids du corps"> Ratio / poids du corps</label>
-          <label><input type="checkbox" value="Ratio droite/gauche"> Comparaison droite/gauche</label>
+          <label><input type="checkbox" value="Ratio droite/gauche"> Ratio droite/gauche</label>
           <label><input type="checkbox" value="Valeur de référence individuelle"> Valeur de référence individuelle</label>
           <label><input type="checkbox" value="Autre"> Autre</label>
         </div>
@@ -1063,12 +1031,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (barAutreCb && barAutreCb.checked && !byId("barrieres-autre").value.trim()) return "Merci de préciser les champs 'Autre' sélectionnés.";
     const raiAutreCb = byId("raisons")?.querySelector("input[value='Autre']");
     if (raiAutreCb && raiAutreCb.checked && !byId("raisons-autre").value.trim()) return "Merci de préciser les champs 'Autre' sélectionnés.";
-// --- Vérif Décélération obligatoire si Oui
-const decelYes = document.querySelector("input[name='decel-yn'][value='Oui']");
-if (decelYes && decelYes.checked) {
-  const decelText = byId("decel-precisez")?.value.trim();
-  if (!decelText) return "Merci de préciser le test de décélération.";
-}
+
     return "";
   };
 

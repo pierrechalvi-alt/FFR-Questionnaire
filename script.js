@@ -761,7 +761,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="checkbox-group">
           <label><input type="checkbox" value="Moyenne du groupe"> Moyenne du groupe</label>
           <label><input type="checkbox" value="Ratio / poids du corps"> Ratio / poids du corps</label>
-          <label><input type="checkbox" value="Ratio droite/gauche"> Ratio droite/gauche</label>
+          <label><input type="checkbox" value="Comparaison droite/gauche"> Ratio droite/gauche</label>
           <label><input type="checkbox" value="Valeur de référence individuelle"> Valeur de référence individuelle</label>
           <label><input type="checkbox" value="Autre"> Autre</label>
         </div>
@@ -812,7 +812,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="checkbox-group">
           <label><input type="checkbox" value="Moyenne du groupe"> Moyenne du groupe</label>
           <label><input type="checkbox" value="Ratio / poids du corps"> Ratio / poids du corps</label>
-          <label><input type="checkbox" value="Ratio droite/gauche"> Ratio droite/gauche</label>
+          <label><input type="checkbox" value="Ratio droite/gauche"> Comparaison droite/gauche</label>
           <label><input type="checkbox" value="Valeur de référence individuelle"> Valeur de référence individuelle</label>
           <label><input type="checkbox" value="Autre"> Autre</label>
         </div>

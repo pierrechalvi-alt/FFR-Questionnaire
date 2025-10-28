@@ -378,6 +378,7 @@ g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
 opc.querySelector(".tools-group").remove();
+opc.querySelector("label")?.remove(); // Supprime le label "Outils utilisés"
 g.appendChild(opc);
 aWrap.appendChild(g);
 });
@@ -398,6 +399,7 @@ const testsEl = document.createElement("div");
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
 opc.querySelector(".tools-group").remove();
+opc.querySelector("label")?.remove(); // Supprime le label "Outils utilisés"
 g.appendChild(opc);
 block.appendChild(g);
 
@@ -420,6 +422,7 @@ g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
 opc.querySelector(".tools-group").remove();
+opc.querySelector("label")?.remove(); // Supprime le label "Outils utilisés"
 g.appendChild(opc);
 block.appendChild(g);
 

@@ -250,10 +250,12 @@ if (cb.value==="Questionnaires") block = createQuestionnaireBlock(zoneName, id);
 if (cb.value==="Test de cognition") block = createCognitionBlock(zoneName, id);
 if (cb.value==="Autres données") block = createOtherDataBlock(zoneName, id);
 
-if (block){
-block.classList.add("slide","show");
-subQ.appendChild(block);
+if (block) {
+  block.classList.add("slide");
+  subQ.appendChild(block);
+  toggleSlide(block, true);
 }
+  
 } else if (exists) {
 exists.classList.remove("show");
 setTimeout(()=>exists.remove(),300);
@@ -556,7 +558,8 @@ const exist = details.querySelector("#"+esc(mid));
 if (mb.checked) {
 const block = document.createElement("div");
 block.id = mid;
-block.className = "slide show";
+block.className = "slide";
+toggleSlide(block, true);
 
 const tools = mobilityToolsFor(zoneName, mb.value);
 block.innerHTML = `
@@ -739,7 +742,7 @@ d.innerHTML = `
 const yn = d.querySelectorAll("input[name='jumps-yn']");
 const det = d.querySelector("#jumps-detail");
 yn.forEach(r=>r.addEventListener("change",()=>{
-det.classList.toggle("show", r.value==="Oui" && r.checked);
+toggleSlide(det, r.value==="Oui" && r.checked);
 }));
 d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
 return d;

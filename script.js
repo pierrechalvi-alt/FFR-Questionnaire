@@ -407,7 +407,6 @@ opc.querySelector(".tools-group").remove();
 g.appendChild(opc);
 
 block.appendChild(g);
-}
 
 } else if (zoneName==="Cheville / Pied" && mb.value==="Intrinsèques du pied") {
 block.innerHTML = `<h5>${mb.value}</h5>`;

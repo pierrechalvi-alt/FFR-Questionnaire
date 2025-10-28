@@ -371,77 +371,123 @@ block.appendChild(opc);
 
 // CHEVILLE : muscles + intrinseques
 } else if (zoneName==="Cheville / Pied" && mb.value==="Flexion/Extension") {
-block.innerHTML = `<h5>${mb.value}</h5>
-<div class="ankle-muscles"></div>`;
-const aWrap = block.querySelector(".ankle-muscles");
-["Gastrocnémien","Soléaire"].forEach(musc => {
-const g = document.createElement("div");
-g.className = "subcard";
-g.innerHTML = `<h6>${musc}</h6>`;
-const tools = document.createElement("div");
-tools.innerHTML = `<label>Outils utilisés</label>
-<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
-g.appendChild(tools);
-ensureOtherText(tools.querySelector(".tools-group"));
-attachIsokineticHandlers(g);
-// Tests spécifiques (Soléaire limité)
-let tests = testsByMuscle[musc]||["Autre"];
-if(musc==="Soléaire"){ tests = ["Isométrie 90°","Autre"]; }
-const testsEl = document.createElement("div");
-testsEl.innerHTML = `<label>Tests spécifiques</label>
-<div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
-g.appendChild(testsEl);
-ensureOtherText(testsEl.querySelector(".tests-group"));
-const opc = createOPC("",{});
-opc.querySelector(".tools-group").remove();
-g.appendChild(opc);
-aWrap.appendChild(g);
-});
+  block.innerHTML = `<h5>${mb.value}</h5>
+  <div class="ankle-muscles"></div>`;
+  const aWrap = block.querySelector(".ankle-muscles");
+
+  ["Gastrocnémien","Soléaire"].forEach(musc => {
+    const g = document.createElement("div");
+    g.className = "subcard";
+    g.innerHTML = `<h6>${musc}</h6>`;
+
+    // Outils utilisés (à garder)
+    const tools = document.createElement("div");
+    tools.innerHTML = `<label>Outils utilisés</label>
+    <div class="checkbox-group tools-group">
+      ${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+    </div>`;
+    g.appendChild(tools);
+    ensureOtherText(tools.querySelector(".tools-group"));
+    attachIsokineticHandlers(g);
+
+    // Tests spécifiques (Soléaire limité)
+    let tests = testsByMuscle[musc] || ["Autre"];
+    if (musc === "Soléaire") { tests = ["Isométrie 90°","Autre"]; }
+    const testsEl = document.createElement("div");
+    testsEl.innerHTML = `<label>Tests spécifiques</label>
+    <div class="checkbox-group tests-group">
+      ${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+    </div>`;
+    g.appendChild(testsEl);
+    ensureOtherText(testsEl.querySelector(".tests-group"));
+
+    // Paramètres + Critères via OPC (on enlève juste le doublon "Outils utilisés")
+    const opc = createOPC("",{});
+    (function(){
+      const tg = opc.querySelector(".checkbox-group.tools-group");
+      if (tg) {
+        const lbl = tg.previousElementSibling;
+        if (lbl && lbl.tagName === "LABEL") lbl.remove(); // retire "Outils utilisés" dupliqué
+        tg.remove(); // retire les cases d'outils dupliquées
+      }
+    })();
+    g.appendChild(opc);
+
+    aWrap.appendChild(g);
+  });
 
 } else if (zoneName==="Cheville / Pied" && mb.value==="Éversion/Inversion") {
-block.innerHTML = `<h5>${mb.value}</h5>`;
-const g = document.createElement("div");
-g.className = "subcard";
-g.innerHTML = `<h6>Inverseurs/Éverseurs</h6>`;
-const tools = document.createElement("div");
-tools.innerHTML = `<label>Outils utilisés</label>
-<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
-g.appendChild(tools);
-ensureOtherText(tools.querySelector(".tools-group"));
-attachIsokineticHandlers(g);
-const tests = testsByMuscle["Inverseurs/Éverseurs"]||["Autre"];
-const testsEl = document.createElement("div");
-testsEl.innerHTML = `<label>Tests spécifiques</label>
-<div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
-g.appendChild(testsEl);
-ensureOtherText(testsEl.querySelector(".tests-group"));
-const opc = createOPC("",{});
-opc.querySelector(".tools-group").remove();
-g.appendChild(opc);
-block.appendChild(g);
+  block.innerHTML = `<h5>${mb.value}</h5>`;
+  const g = document.createElement("div");
+  g.className = "subcard";
+  g.innerHTML = `<h6>Inverseurs/Éverseurs</h6>`;
+
+  // Outils utilisés (à garder)
+  const tools = document.createElement("div");
+  tools.innerHTML = `<label>Outils utilisés</label>
+  <div class="checkbox-group tools-group">
+    ${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+  </div>`;
+  g.appendChild(tools);
+  ensureOtherText(tools.querySelector(".tools-group"));
+  attachIsokineticHandlers(g);
+
+  // ⚠️ Pas de "Tests spécifiques" ici (tu ne le veux pas sur Éversion/Inversion)
+
+  // Paramètres + Critères via OPC (on enlève le doublon outils)
+  const opc = createOPC("",{});
+  (function(){
+    const tg = opc.querySelector(".checkbox-group.tools-group");
+    if (tg) {
+      const lbl = tg.previousElementSibling;
+      if (lbl && lbl.tagName === "LABEL") lbl.remove();
+      tg.remove();
+    }
+  })();
+  g.appendChild(opc);
+
+  block.appendChild(g);
 
 } else if (zoneName==="Cheville / Pied" && mb.value==="Intrinsèques du pied") {
-block.innerHTML = `<h5>${mb.value}</h5>`;
-const g = document.createElement("div");
-g.className = "subcard";
-g.innerHTML = `<h6>Intrinsèques du pied</h6>`;
-const tools = document.createElement("div");
-tools.innerHTML = `<label>Outils utilisés</label>
-<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
-g.appendChild(tools);
-ensureOtherText(tools.querySelector(".tools-group"));
-attachIsokineticHandlers(g);
-const tests = testsByMuscle["Intrinsèques du pied"]||["Autre"];
-const testsEl = document.createElement("div");
-testsEl.innerHTML = `<label>Tests spécifiques</label>
-<div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
-g.appendChild(testsEl);
-ensureOtherText(testsEl.querySelector(".tests-group"));
-const opc = createOPC("",{});
-opc.querySelector(".tools-group").remove();
-g.appendChild(opc);
-block.appendChild(g);
+  block.innerHTML = `<h5>${mb.value}</h5>`;
+  const g = document.createElement("div");
+  g.className = "subcard";
+  g.innerHTML = `<h6>Intrinsèques du pied</h6>`;
 
+  // Outils utilisés (à garder)
+  const tools = document.createElement("div");
+  tools.innerHTML = `<label>Outils utilisés</label>
+  <div class="checkbox-group tools-group">
+    ${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+  </div>`;
+  g.appendChild(tools);
+  ensureOtherText(tools.querySelector(".tools-group"));
+  attachIsokineticHandlers(g);
+
+  // Tests spécifiques
+  const tests = ["Toe Curl test","Short Foot test","Autre"];
+  const testsEl = document.createElement("div");
+  testsEl.innerHTML = `<label>Tests spécifiques</label>
+  <div class="checkbox-group tests-group">
+    ${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+  </div>`;
+  g.appendChild(testsEl);
+  ensureOtherText(testsEl.querySelector(".tests-group"));
+
+  // Paramètres + Critères via OPC (on enlève le doublon outils)
+  const opc = createOPC("",{});
+  (function(){
+    const tg = opc.querySelector(".checkbox-group.tools-group");
+    if (tg) {
+      const lbl = tg.previousElementSibling;
+      if (lbl && lbl.tagName === "LABEL") lbl.remove();
+      tg.remove();
+    }
+  })();
+  g.appendChild(opc);
+
+  block.appendChild(g);
+}
 } else if (zoneName==="Épaule" && mb.value==="ASH Test") {
 // ASH Test – positions + OPC SANS isocinétisme
 block.innerHTML = `<h5>ASH Test</h5>

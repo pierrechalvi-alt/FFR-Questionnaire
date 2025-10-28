@@ -20,16 +20,27 @@ const requiredIfVisible = el => el && el.offsetParent !== null;
 * PROGRESSION
 * ------------------------------------------- */
 const progressBar = byId("progress-bar");
-const progressText = byId("progress-text");
+const progressContainer = byId("progress-container");
 const form = byId("questionnaireForm");
 const formCards = $$(".card");
+
 const updateProgress = () => {
-const filled = formCards.filter(sec => sec.querySelector("input:checked") || sec.querySelector("input[type='text'][value]")).length;
-const total = formCards.length;
-const pct = Math.min(100, Math.round((filled/total)*100));
-progressBar.style.width = pct+"%";
-progressText.textContent = `Progression : ${pct}%`;
+  const filled = formCards.filter(sec =>
+    sec.querySelector("input:checked") ||
+    sec.querySelector("input[type='text'][value]")
+  ).length;
+
+  const total = formCards.length;
+  const pct = Math.min(100, Math.round((filled / total) * 100));
+
+  // Mise à jour de la largeur de la barre
+  progressBar.style.width = pct + "%";
+
+  // Affichage du pourcentage au centre de la barre
+  progressContainer.setAttribute("data-progress", pct);
 };
+
+// Déclenchement à chaque changement
 document.addEventListener("change", updateProgress);
 
 /* ---------------------------------------------

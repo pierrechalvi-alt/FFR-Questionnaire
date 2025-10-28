@@ -455,7 +455,6 @@ block.appendChild(opc);
   }
   g.appendChild(opc);
   block.appendChild(g);
-}
 } else if (zoneName==="Épaule" && mb.value==="ASH Test") {
 // ASH Test – positions + OPC SANS isocinétisme
 block.innerHTML = `<h5>ASH Test</h5>

@@ -13,6 +13,22 @@ const byId = id => document.getElementById(id);
 const requiredIfVisible = el => el && el.offsetParent !== null;
 
 /* ---------------------------------------------
+* PROGRESSION
+* ------------------------------------------- */
+const progressBar = byId("progress-bar");
+const progressText = byId("progress-text");
+const form = byId("questionnaireForm");
+const formCards = $$(".card");
+const updateProgress = () => {
+const filled = formCards.filter(sec => sec.querySelector("input:checked") || sec.querySelector("input[type='text'][value]")).length;
+const total = formCards.length;
+const pct = Math.min(100, Math.round((filled/total)*100));
+progressBar.style.width = pct+"%";
+progressText.textContent = `Progression : ${pct}%`;
+};
+document.addEventListener("change", updateProgress);
+
+/* ---------------------------------------------
 * Rôle / Équipe : champs "Autre"
 * ------------------------------------------- */
 const toggleOther = (name, inputId) => {
@@ -355,128 +371,76 @@ block.appendChild(opc);
 
 // CHEVILLE : muscles + intrinseques
 } else if (zoneName==="Cheville / Pied" && mb.value==="Flexion/Extension") {
-  block.innerHTML = `<h5>${mb.value}</h5>
-  <div class="ankle-muscles"></div>`;
-  const aWrap = block.querySelector(".ankle-muscles");
-
-  ["Gastrocnémien","Soléaire"].forEach(musc => {
-    const g = document.createElement("div");
-    g.className = "subcard";
-    g.innerHTML = `<h6>${musc}</h6>`;
-
-    // --- Outils utilisés (à garder) ---
-    const tools = document.createElement("div");
-    tools.innerHTML = `
-      <label>Outils utilisés</label>
-      <div class="checkbox-group tools-group">
-        ${toolsForce.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
-      </div>`;
-    g.appendChild(tools);
-    ensureOtherText(tools.querySelector(".tools-group"));
-    attachIsokineticHandlers(g);
-
-    // --- Tests spécifiques (Gastro = liste complète / Soléaire = restreint) ---
-    let tests = testsByMuscle[musc] || ["Autre"];
-    if (musc === "Soléaire") { tests = ["Isométrie 90°","Autre"]; }
-    const testsEl = document.createElement("div");
-    testsEl.innerHTML = `
-      <label>Tests spécifiques</label>
-      <div class="checkbox-group tests-group">
-        ${tests.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
-      </div>`;
-    g.appendChild(testsEl);
-    ensureOtherText(testsEl.querySelector(".tests-group"));
-
-    // --- Paramètres & Critères via OPC (on supprime le doublon "Outils utilisés" du OPC) ---
-    const opc = createOPC("", {});
-    (function stripOpcTools(opcRoot){
-      const toolsGroup = opcRoot.querySelector(".checkbox-group.tools-group");
-      if (toolsGroup) {
-        const lbl = toolsGroup.previousElementSibling;
-        if (lbl && lbl.tagName === "LABEL") lbl.remove(); // label "Outils utilisés" dupliqué
-        toolsGroup.remove(); // cases d'outils dupliquées
-      }
-    })(opc);
-
-    g.appendChild(opc);
-    aWrap.appendChild(g);
-  });
+block.innerHTML = `<h5>${mb.value}</h5>
+<div class="ankle-muscles"></div>`;
+const aWrap = block.querySelector(".ankle-muscles");
+["Gastrocnémien","Soléaire"].forEach(musc => {
+const g = document.createElement("div");
+g.className = "subcard";
+g.innerHTML = `<h6>${musc}</h6>`;
+const tools = document.createElement("div");
+tools.innerHTML = `<label>Outils utilisés</label>
+<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+g.appendChild(tools);
+ensureOtherText(tools.querySelector(".tools-group"));
+attachIsokineticHandlers(g);
+// Tests spécifiques (Soléaire limité)
+let tests = testsByMuscle[musc]||["Autre"];
+if(musc==="Soléaire"){ tests = ["Isométrie 90°","Autre"]; }
+const testsEl = document.createElement("div");
+testsEl.innerHTML = `<label>Tests spécifiques</label>
+<div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+g.appendChild(testsEl);
+ensureOtherText(testsEl.querySelector(".tests-group"));
+const opc = createOPC("",{});
+opc.querySelector(".tools-group").remove();
+g.appendChild(opc);
+aWrap.appendChild(g);
+});
 
 } else if (zoneName==="Cheville / Pied" && mb.value==="Éversion/Inversion") {
-  block.innerHTML = `<h5>${mb.value}</h5>`;
-  const g = document.createElement("div");
-  g.className = "subcard";
-  g.innerHTML = `<h6>Inverseurs/Éverseurs</h6>`;
-
-  // --- Outils utilisés (à garder) ---
-  const tools = document.createElement("div");
-  tools.innerHTML = `
-    <label>Outils utilisés</label>
-    <div class="checkbox-group tools-group">
-      ${toolsForce.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
-    </div>`;
-  g.appendChild(tools);
-  ensureOtherText(tools.querySelector(".tools-group"));
-  attachIsokineticHandlers(g);
-
-  // (pas de "Tests spécifiques" pour Éversion/Inversion dans le rendu cible)
-
-  // --- Paramètres & Critères via OPC (on retire le doublon d'outils) ---
-  const opc = createOPC("", {});
-  (function stripOpcTools(opcRoot){
-    const toolsGroup = opcRoot.querySelector(".checkbox-group.tools-group");
-    if (toolsGroup) {
-      const lbl = toolsGroup.previousElementSibling;
-      if (lbl && lbl.tagName === "LABEL") lbl.remove();
-      toolsGroup.remove();
-    }
-  })(opc);
-
-  g.appendChild(opc);
-  block.appendChild(g);
+block.innerHTML = `<h5>${mb.value}</h5>`;
+const g = document.createElement("div");
+g.className = "subcard";
+g.innerHTML = `<h6>Inverseurs/Éverseurs</h6>`;
+const tools = document.createElement("div");
+tools.innerHTML = `<label>Outils utilisés</label>
+<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+g.appendChild(tools);
+ensureOtherText(tools.querySelector(".tools-group"));
+attachIsokineticHandlers(g);
+const tests = testsByMuscle["Inverseurs/Éverseurs"]||["Autre"];
+const testsEl = document.createElement("div");
+testsEl.innerHTML = `<label>Tests spécifiques</label>
+<div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+g.appendChild(testsEl);
+ensureOtherText(testsEl.querySelector(".tests-group"));
+const opc = createOPC("",{});
+opc.querySelector(".tools-group").remove();
+g.appendChild(opc);
+block.appendChild(g);
 
 } else if (zoneName==="Cheville / Pied" && mb.value==="Intrinsèques du pied") {
-  block.innerHTML = `<h5>${mb.value}</h5>`;
-  const g = document.createElement("div");
-  g.className = "subcard";
-  g.innerHTML = `<h6>Intrinsèques du pied</h6>`;
-
-  // --- Outils utilisés (à garder) ---
-  const tools = document.createElement("div");
-  tools.innerHTML = `
-    <label>Outils utilisés</label>
-    <div class="checkbox-group tools-group">
-      ${toolsForce.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
-    </div>`;
-  g.appendChild(tools);
-  ensureOtherText(tools.querySelector(".tools-group"));
-  attachIsokineticHandlers(g);
-
-  // --- Tests spécifiques (Toe/Short Foot/Autre) ---
-  const tests = ["Toe Curl test","Short Foot test","Autre"];
-  const testsEl = document.createElement("div");
-  testsEl.innerHTML = `
-    <label>Tests spécifiques</label>
-    <div class="checkbox-group tests-group">
-      ${tests.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
-    </div>`;
-  g.appendChild(testsEl);
-  ensureOtherText(testsEl.querySelector(".tests-group"));
-
-  // --- Paramètres & Critères via OPC (on retire le doublon d'outils) ---
-  const opc = createOPC("", {});
-  (function stripOpcTools(opcRoot){
-    const toolsGroup = opcRoot.querySelector(".checkbox-group.tools-group");
-    if (toolsGroup) {
-      const lbl = toolsGroup.previousElementSibling;
-      if (lbl && lbl.tagName === "LABEL") lbl.remove();
-      toolsGroup.remove();
-    }
-  })(opc);
-
-  g.appendChild(opc);
-  block.appendChild(g);
-}
+block.innerHTML = `<h5>${mb.value}</h5>`;
+const g = document.createElement("div");
+g.className = "subcard";
+g.innerHTML = `<h6>Intrinsèques du pied</h6>`;
+const tools = document.createElement("div");
+tools.innerHTML = `<label>Outils utilisés</label>
+<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+g.appendChild(tools);
+ensureOtherText(tools.querySelector(".tools-group"));
+attachIsokineticHandlers(g);
+const tests = testsByMuscle["Intrinsèques du pied"]||["Autre"];
+const testsEl = document.createElement("div");
+testsEl.innerHTML = `<label>Tests spécifiques</label>
+<div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+g.appendChild(testsEl);
+ensureOtherText(testsEl.querySelector(".tests-group"));
+const opc = createOPC("",{});
+opc.querySelector(".tools-group").remove();
+g.appendChild(opc);
+block.appendChild(g);
 
 } else if (zoneName==="Épaule" && mb.value==="ASH Test") {
 // ASH Test – positions + OPC SANS isocinétisme
@@ -1227,77 +1191,21 @@ resultMsg.textContent = "⚠️ Erreur d’envoi. Vérifiez votre connexion et r
 * INIT : "Autre" commun + progression
 * ------------------------------------------- */
 const setupCommonAutre = (groupId, inputId) => {
-  const group = byId(groupId);
-  if(!group) return;
-  const cb = group.querySelector("input[value='Autre']");
-  const input = byId(inputId);
-  if(!cb || !input) return;
-  const toggle = () => {
-    input.style.display = cb.checked ? "block" : "none";
-    input.required = cb.checked;
-    if(!cb.checked) input.value="";
-  };
-  cb.addEventListener("change", toggle);
-  toggle();
+const group = byId(groupId);
+if(!group) return;
+const cb = group.querySelector("input[value='Autre']");
+const input = byId(inputId);
+if(!cb || !input) return;
+const toggle = () => {
+input.style.display = cb.checked ? "block" : "none";
+input.required = cb.checked;
+if(!cb.checked) input.value="";
+};
+cb.addEventListener("change", toggle);
+toggle();
 };
 setupCommonAutre("barrieres","barrieres-autre");
 setupCommonAutre("raisons","raisons-autre");
 
-/* --- GESTION DE LA BARRE DE PROGRESSION --- */
-const form = document.getElementById("questionnaireForm");
-const progressBar = document.getElementById("progress-bar");
-const progressText = document.getElementById("progress-text");
-
-function updateProgress() {
-  // Récupère tous les champs visibles et pertinents
-  const requiredInputs = Array.from(
-    form.querySelectorAll("input[required], input[type='radio'], input[type='checkbox']")
-  );
-
-  // Groupes de radios uniques (pour ne pas surcompter)
-  const radioGroups = [...new Set(
-    requiredInputs
-      .filter(i => i.type === "radio")
-      .map(i => i.name)
-  )];
-
-  // Total de champs "évaluables"
-  const totalGroups = requiredInputs.filter(i => i.type !== "radio" && i.type !== "checkbox").length +
-    radioGroups.length;
-
-  let completed = 0;
-
-  // Textes remplis
-  requiredInputs
-    .filter(i => i.type !== "radio" && i.type !== "checkbox")
-    .forEach(i => {
-      if (i.value.trim() !== "") completed++;
-    });
-
-  // Radios cochées
-  radioGroups.forEach(group => {
-    if (form.querySelector(`input[name="${group}"]:checked`)) completed++;
-  });
-
-  // (Optionnel) cocher les cases contribue aussi à la progression
-  // -> active cette ligne si tu veux que les cases cochées comptent :
-  // completed += form.querySelectorAll('input[type="checkbox"]:checked').length;
-
-  // Calcul du pourcentage
-  const percent = totalGroups > 0 ? Math.min(Math.round((completed / totalGroups) * 100), 100) : 0;
-
-  // Mise à jour visuelle
-  progressBar.style.width = percent + "%";
-  progressText.textContent = `Progression : ${percent}%`;
-}
-
-// Mises à jour à chaque saisie ou sélection
-form.addEventListener("input", updateProgress);
-form.addEventListener("change", updateProgress);
-
-// Mise à jour aussi lors de la création dynamique de nouveaux éléments
-document.addEventListener("DOMNodeInserted", updateProgress);
-
-// Initialisation au chargement
 updateProgress();
-}); // ← bien refermer le DOMContentLoaded ici !
+});

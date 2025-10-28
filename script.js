@@ -492,9 +492,12 @@ block.appendChild(opc);
 }
 
 details.appendChild(block);
-} } else if (exist) {
+} 
+} else if (exist) {
   toggleSlide(exist, false);
-  setTimeout(() => exist.remove(), 400);
+  setTimeout(()=>exist.remove(), 400);
+}
+
 }
 }
 });
@@ -578,8 +581,9 @@ details.appendChild(block);
 ensureOtherText(block.querySelector(".tools-group"));
 ensureOtherText(block.querySelectorAll(".checkbox-group")[1]);
 } else if (exist) {
-exist.classList.remove("show");
-setTimeout(()=>exist.remove(),300);
+  toggleSlide(exist, false);
+  setTimeout(()=>exist.remove(), 400);
+}
 }
 });
 });
@@ -742,7 +746,8 @@ d.innerHTML = `
 const yn = d.querySelectorAll("input[name='jumps-yn']");
 const det = d.querySelector("#jumps-detail");
 yn.forEach(r=>r.addEventListener("change",()=>{
-toggleSlide(det, r.value==="Oui" && r.checked);
+  toggleSlide(det, r.value==="Oui" && r.checked);
+  toggleCombatBlock();
 }));
 d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
 return d;
@@ -827,7 +832,7 @@ toggleCombatBlock();
 const dYN = d.querySelectorAll("input[name='decel-yn']");
 const dDet = d.querySelector("#decel-detail");
 dYN.forEach(r=>r.addEventListener("change",()=>{
-dDet.classList.toggle("show", r.value==="Oui" && r.checked);
+  toggleSlide(dDet, r.value==="Oui" && r.checked);
 }));
 
 d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
@@ -878,7 +883,7 @@ d.innerHTML = `
 const yn = d.querySelectorAll("input[name='mi-yn']");
 const det = d.querySelector("#mi-detail");
 yn.forEach(r=>r.addEventListener("change",()=>{
-det.classList.toggle("show", r.value==="Oui" && r.checked);
+  toggleSlide(det, r.value==="Oui" && r.checked);
 }));
 d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
 return d;
@@ -929,7 +934,7 @@ d.innerHTML = `
 const yn = d.querySelectorAll("input[name='ms-yn']");
 const det = d.querySelector("#ms-detail");
 yn.forEach(r=>r.addEventListener("change",()=>{
-det.classList.toggle("show", r.value==="Oui" && r.checked);
+  toggleSlide(det, r.value==="Oui" && r.checked);
 }));
 d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
 return d;

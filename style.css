@@ -162,3 +162,18 @@ footer{
 @media(max-width:720px){
   .grid-2{grid-template-columns:1fr}
 }
+/* === FIX FINAL AFFICHAGE DES BLOCS DYNAMIQUES (Cheville/Pied, etc.) === */
+.zone-block,
+.section-content,
+.card-body,
+.card,
+.slide,
+.ankle-muscles {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: none !important;
+}

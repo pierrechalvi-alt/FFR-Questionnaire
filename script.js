@@ -1,6 +1,10 @@
 /* =========================================================
-QUESTIONNAIRE – Version finale corrigée (Option 1)
-Structure & logique identiques à ta version d’origine
+QUESTIONNAIRE – Version intégrale (tout périmètre)
+Aligné avec la logique fournie par l'utilisateur.
+- Index et CSS : conformes à ceux fournis
+- Ce script remplace intégralement votre script.js
+- Focus sur robustesse, suppression des doublons "Outils utilisés" dans les sous-blocs,
+isocinétisme propre (vitesses + modes), champs "Autre" uniques, blocs transversaux.
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,7 +47,7 @@ toggleOther("role", "role-autre");
 toggleOther("equipe", "equipe-autre");
 
 /* ---------------------------------------------
-* Constantes & libellés (corrigées selon ton déroulé)
+* Constantes & libellés (conformes au déroulé)
 * ------------------------------------------- */
 const headNeck = ["Tête","Rachis cervical"];
 const headNeckTitle = "Tête / Rachis cervical";
@@ -52,7 +56,7 @@ const lowerBody = ["Hanche","Genou","Cheville / Pied"];
 // Outils – Force (générique)
 const toolsForce = ["Dynamomètre manuel","Dynamomètre fixe","Isocinétisme","Plateforme de force","Sans outil","Autre"];
 
-// Outils – Mobilité (liste de base - on restreindra par zone/mouvement)
+// Outils – Mobilité
 const toolsMobBase = ["Goniomètre","Inclinomètre","Autre"];
 
 // Paramètres + critères – Force
@@ -67,7 +71,6 @@ const proprioByZone = {
 "Épaule":["Y-Balance Test (épaule)","FMS (Upper)","Autre"],
 [headNeckTitle]:["Test proprio cervical (laser)","Autre"],
 "Rachis lombaire":["FMS (Core)","Autre"],
-// IMPORTANT: catégories vides supprimées -> pas d’option dans le sélecteur
 "Poignet / Main":[],
 "Coude":[]
 };
@@ -82,7 +85,7 @@ const questionnairesByZone = {
 [headNeckTitle]:["SCAT6","Neck Disability Index (NDI)","Copenhagen Neck Functional Scale","Autre"]
 };
 
-// Tests musculaires
+// Tests musculaires + spécifiques
 const testsByMuscle = {
 "Ischiojambiers":["McCall 90°","Isométrie 30°","Nordic","Nordic Hold","Razor Curl","Single Leg Bridge","Autre"],
 "Quadriceps":["Isométrie 60°","Leg Extension","Single Leg Squat","Autre"],
@@ -92,7 +95,7 @@ const testsByMuscle = {
 "Intrinsèques du pied":["Toe Curl test","Short Foot test","Dynamométrie","Plateforme de pressions","Autre"]
 };
 
-// Isocinétisme (⚠️ corrigé : uniquement Concentrique & Excentrique)
+// Isocinétisme
 const isokineticSpeeds = ["30°/s","60°/s","120°/s","180°/s","Autre"];
 const isokineticModes = ["Concentrique","Excentrique"];
 
@@ -133,7 +136,7 @@ other.addEventListener("change", ensure);
 ensure();
 };
 
-// ---- Isocinétisme: sous-questions standardisées (modes restreints)
+// ---- Isocinétisme: sous-questions standardisées
 const attachIsokineticHandlers = (scope) => {
 const groups = scope.querySelectorAll(".tools-group");
 groups.forEach(g => {
@@ -176,20 +179,20 @@ ${toolsList.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).j
 ${extraToolsHtml}
 </div>
 <label>Paramètres étudiés</label>
-<div class="checkbox-group">${paramsForce.map(p=>`<label><input type="checkbox" value="${p}"> ${p}</label>`).join("")}</div>
+<div class="checkbox-group params-group">${paramsForce.map(p=>`<label><input type="checkbox" value="${p}"> ${p}</label>`).join("")}</div>
 <label>Critères d’évaluation</label>
-<div class="checkbox-group">
+<div class="checkbox-group crit-group">
 ${(criteriaOverride||criteriaGeneric).map(c=>`<label><input type="checkbox" value="${c}"> ${c}</label>`).join("")}
 </div>
 `;
 ensureOtherText(div.querySelector(".tools-group"));
 if (!excludeIsokinetic) attachIsokineticHandlers(div);
-ensureOtherText(div.querySelectorAll(".checkbox-group")[2]);
+ensureOtherText(div.querySelector(".crit-group"));
 return div;
 };
 
 /* ---------------------------------------------
-* SECTION PAR ZONE (conforme à ton déroulé)
+* SECTION PAR ZONE
 * ------------------------------------------- */
 const createZoneSection = (zoneName) => {
 if (byId(`section-${slug(zoneName)}`)) return;
@@ -197,7 +200,7 @@ const sec = document.createElement("div");
 sec.className = "subcard fade-in";
 sec.id = `section-${slug(zoneName)}`;
 
-// --- Types dynamiques (on supprime les catégories vides) ---
+// --- Types dynamiques (selon dispo)
 const hasProprio = (proprioByZone[zoneName]||[]).length>0;
 const hasQuestionnaires = (questionnairesByZone[zoneName]||[]).length>0;
 
@@ -285,7 +288,7 @@ toggleGlobalsBlock();
 };
 
 /* ---------------------------------------------
-* FORCE – par zone / mouvement (conforme déroulé)
+* FORCE – par zone / mouvement
 * ------------------------------------------- */
 const createForceBlock = (zoneName, id) => {
 const div = document.createElement("div");
@@ -293,9 +296,7 @@ div.id = id;
 
 // Mouvements disponibles par zone
 const moves = [];
-// Base
 if (zoneName==="Genou") {
-// Genou: on gère par groupes musculaires (Ischios / Quads)
 moves.push("Flexion/Extension");
 } else if (zoneName==="Cheville / Pied") {
 moves.push("Flexion/Extension","Éversion/Inversion","Intrinsèques du pied");
@@ -332,7 +333,7 @@ const block = document.createElement("div");
 block.id = mid;
 block.className = "slide show";
 
-// GENOU: Flex/Ext -> Ischio/Quads unités séparées
+// GENOU: Flex/Ext -> Ischio/Quads
 if (zoneName==="Genou" && mb.value==="Flexion/Extension") {
 block.innerHTML = `<h5>${mb.value}</h5>
 <div class="knee-muscles"></div>`;
@@ -357,14 +358,19 @@ g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
 // Param + Crit (sans re-outils)
 const opc = createOPC("",{});
-// retirer groupe d'outils du OPC
-opc.querySelector(".tools-group").remove();
+// retirer groupe d'outils du OPC (et le label)
+const toolsGroupInOpc = opc.querySelector(".tools-group");
+if (toolsGroupInOpc) {
+const lbl = toolsGroupInOpc.previousElementSibling;
+if (lbl && lbl.tagName === "LABEL") lbl.remove();
+toolsGroupInOpc.remove();
+}
 g.appendChild(opc);
 kWrap.appendChild(g);
 });
 
-// HANCHE (Flex/Ext, Add/Abd) : OPC direct
-} else if (zoneName==="Hanche" && (mb.value==="Adduction/Abduction" || mb.value==="Flexion/Extension")) {
+// HANCHE (Flex/Ext, Add/Abd) : OPC direct (avec isocinétisme)
+} else if (zoneName==="Hanche" && (mb.value==="Adduction/Abduction" || mb.value==="Flexion/Extension" || mb.value==="Rotations")) {
 block.innerHTML = `<h5>${mb.value}</h5>`;
 const opc = createOPC("",{});
 block.appendChild(opc);
@@ -378,13 +384,14 @@ const aWrap = block.querySelector(".ankle-muscles");
 const g = document.createElement("div");
 g.className = "subcard";
 g.innerHTML = `<h6>${musc}</h6>`;
+// Outils (uniquement ici)
 const tools = document.createElement("div");
 tools.innerHTML = `<label>Outils utilisés</label>
 <div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
 g.appendChild(tools);
 ensureOtherText(tools.querySelector(".tools-group"));
 attachIsokineticHandlers(g);
-// Tests spécifiques (Soléaire limité)
+// Tests spécifiques
 let tests = testsByMuscle[musc]||["Autre"];
 if(musc==="Soléaire"){ tests = ["Isométrie 90°","Autre"]; }
 const testsEl = document.createElement("div");
@@ -392,8 +399,14 @@ testsEl.innerHTML = `<label>Tests spécifiques</label>
 <div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
 g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
+// Param + Crit (sans re-outils)
 const opc = createOPC("",{});
-opc.querySelector(".tools-group").remove();
+const toolsGroupInOpc = opc.querySelector(".tools-group");
+if (toolsGroupInOpc) {
+const lbl = toolsGroupInOpc.previousElementSibling;
+if (lbl && lbl.tagName === "LABEL") lbl.remove();
+toolsGroupInOpc.remove();
+}
 g.appendChild(opc);
 aWrap.appendChild(g);
 });
@@ -403,20 +416,28 @@ block.innerHTML = `<h5>${mb.value}</h5>`;
 const g = document.createElement("div");
 g.className = "subcard";
 g.innerHTML = `<h6>Inverseurs/Éverseurs</h6>`;
+// Outils
 const tools = document.createElement("div");
 tools.innerHTML = `<label>Outils utilisés</label>
 <div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
 g.appendChild(tools);
 ensureOtherText(tools.querySelector(".tools-group"));
 attachIsokineticHandlers(g);
+// Tests spécifiques
 const tests = testsByMuscle["Inverseurs/Éverseurs"]||["Autre"];
 const testsEl = document.createElement("div");
 testsEl.innerHTML = `<label>Tests spécifiques</label>
 <div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
 g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
+// Param + Crit (sans re-outils)
 const opc = createOPC("",{});
-opc.querySelector(".tools-group").remove();
+const toolsGroupInOpc = opc.querySelector(".tools-group");
+if (toolsGroupInOpc) {
+const lbl = toolsGroupInOpc.previousElementSibling;
+if (lbl && lbl.tagName === "LABEL") lbl.remove();
+toolsGroupInOpc.remove();
+}
 g.appendChild(opc);
 block.appendChild(g);
 
@@ -425,20 +446,28 @@ block.innerHTML = `<h5>${mb.value}</h5>`;
 const g = document.createElement("div");
 g.className = "subcard";
 g.innerHTML = `<h6>Intrinsèques du pied</h6>`;
+// Outils
 const tools = document.createElement("div");
 tools.innerHTML = `<label>Outils utilisés</label>
 <div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
 g.appendChild(tools);
 ensureOtherText(tools.querySelector(".tools-group"));
 attachIsokineticHandlers(g);
+// Tests spécifiques
 const tests = testsByMuscle["Intrinsèques du pied"]||["Autre"];
 const testsEl = document.createElement("div");
 testsEl.innerHTML = `<label>Tests spécifiques</label>
 <div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
 g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
+// Param + Crit (sans re-outils)
 const opc = createOPC("",{});
-opc.querySelector(".tools-group").remove();
+const toolsGroupInOpc = opc.querySelector(".tools-group");
+if (toolsGroupInOpc) {
+const lbl = toolsGroupInOpc.previousElementSibling;
+if (lbl && lbl.tagName === "LABEL") lbl.remove();
+toolsGroupInOpc.remove();
+}
 g.appendChild(opc);
 block.appendChild(g);
 
@@ -474,7 +503,7 @@ ensureOtherText(opc.querySelectorAll(".checkbox-group")[2]);
 block.appendChild(opc);
 
 } else {
-// Mouvement simple: outils/params/crit, avec cas spé
+// Mouvement simple: outils/params/crit, cas spé
 block.innerHTML = `<h5>${mb.value}</h5>`;
 
 // EXTRA TOOLS cas spé
@@ -511,7 +540,7 @@ return div;
 };
 
 /* ---------------------------------------------
-* MOBILITÉ – restrictions d’outils selon zone/mouvement
+* MOBILITÉ – restrictions d’outils
 * ------------------------------------------- */
 const createMobilityBlock = (zoneName, id) => {
 const div = document.createElement("div");
@@ -537,17 +566,12 @@ const details = div.querySelector(".mob-details");
 
 // Fonction utilitaire: outils mobilité autorisés par zone/mouvement
 const mobilityToolsFor = (zone, move) => {
-// base
 const base = [...toolsMobBase];
-// Spécificités demandées :
 if (zone==="Cheville / Pied") {
-// KTW réservé à la cheville
 base.splice(base.length-1,0,"Knee-to-wall (KTW)");
 }
 if (zone==="Rachis lombaire") {
-// Sit-and-reach pour la mobilité lombaire (présent en général)
 base.splice(base.length-1,0,"Sit-and-reach");
-// Distance doigt-sol réservée à Flexion et Inclinaisons
 if (move==="Flexion/Extension" || move==="Inclinaisons") {
 base.splice(base.length-1,0,"Distance doigt-sol");
 }
@@ -597,7 +621,7 @@ return div;
 * ------------------------------------------- */
 const createProprioBlock = (zoneName, id) => {
 const list = proprioByZone[zoneName]||[];
-if (!list.length) return document.createElement("div"); // rien à afficher si vide
+if (!list.length) return document.createElement("div");
 const div = document.createElement("div");
 div.id = id;
 div.innerHTML = `
@@ -635,7 +659,7 @@ return div;
 };
 
 /* ---------------------------------------------
-* COGNITION (uniquement Tête / Rachis cervical)
+* COGNITION (Head/Neck)
 * ------------------------------------------- */
 const createCognitionBlock = (zoneName, id) => {
 const div = document.createElement("div");
@@ -688,7 +712,7 @@ toggleGlobalsBlock();
 });
 
 /* ---------------------------------------------
-* BLOCS TRANSVERSAUX (Sauts, Course, Globaux, Combat)
+* BLOCS TRANSVERSAUX
 * ------------------------------------------- */
 const globalsSection = byId("globalsSection");
 const globalBlocks = byId("globalBlocks");
@@ -1015,7 +1039,7 @@ toggleGlobalsBlock();
 });
 
 /* ---------------------------------------------
-* VALIDATION + ENVOI GOOGLE FORM (identique + décélération)
+* VALIDATION + ENVOI GOOGLE FORM
 * ------------------------------------------- */
 const resultMsg = byId("resultMessage");
 const submitBtn = byId("submitBtn");
@@ -1090,28 +1114,50 @@ const jumps = byId("global-jumps");
 if (jumps) {
 gb.sauts = { fait: gatherRadio(jumps) };
 if (gb.sauts.fait==="Oui") {
-gb.sauts.tests = gatherChecked(jumps);
-gb.sauts.params = gatherChecked(jumps.querySelectorAll(".checkbox-group")[1].parentElement);
+const groups = jumps.querySelectorAll("#jumps-detail .checkbox-group");
+gb.sauts.tests = gatherChecked(groups[0]);
+gb.sauts.params = gatherChecked(groups[1]);
+gb.sauts.outils = gatherChecked(groups[2]);
+gb.sauts.criteres = gatherChecked(groups[3]);
 }
 }
 const course = byId("global-course");
 if (course) {
 gb.course = { fait: gatherRadio(course) };
 if (gb.course.fait==="Oui") {
-gb.course.tests = gatherChecked(course);
-// Décélération
+const groups = course.querySelectorAll("#course-detail .checkbox-group");
+// group 0: énergétiques, 1: vitesse, 2: COD, 3: decel YN, 4: outils, 5: critères
+gb.course.tests_ener = gatherChecked(groups[0]);
+gb.course.tests_vit = gatherChecked(groups[1]);
+gb.course.tests_cod = gatherChecked(groups[2]);
 const dYN = course.querySelector("input[name='decel-yn']:checked")?.value || "";
 const dText = course.querySelector("#decel-detail .other-input")?.value?.trim() || "";
 gb.course.deceleration = { fait: dYN, details: (dYN==="Oui") ? dText : "" };
+gb.course.outils = gatherChecked(groups[4]);
+gb.course.criteres = gatherChecked(groups[5]);
 }
 }
 const mi = byId("global-mi");
 if (mi) {
 gb.mi = { fait:gatherRadio(mi) };
+if (gb.mi.fait==="Oui") {
+const groups = mi.querySelectorAll("#mi-detail .checkbox-group");
+gb.mi.tests = gatherChecked(groups[0]);
+gb.mi.outils = gatherChecked(groups[1]);
+gb.mi.params = gatherChecked(groups[2]);
+gb.mi.criteres = gatherChecked(groups[3]);
+}
 }
 const ms = byId("global-ms");
 if (ms) {
 gb.ms = { fait:gatherRadio(ms) };
+if (gb.ms.fait==="Oui") {
+const groups = ms.querySelectorAll("#ms-detail .checkbox-group");
+gb.ms.tests = gatherChecked(groups[0]);
+gb.ms.outils = gatherChecked(groups[1]);
+gb.ms.params = gatherChecked(groups[2]);
+gb.ms.criteres = gatherChecked(groups[3]);
+}
 }
 const combat = byId("global-combat");
 if (combat) {
@@ -1171,7 +1217,7 @@ const fd = new FormData();
 fd.append(GOOGLE_ENTRY_KEY, JSON.stringify(payload));
 
 try{
-await fetch("https://docs.google.com/forms/u/0/d/e/1FAIpQLSeNok3wNrafUFIM2VnAo4NKQpdZDaDyFDeVS8dZbXFyt_ySyA/formResponse", {method:"POST",mode:"no-cors",body:fd});
+await fetch(GOOGLE_FORM_URL, {method:"POST",mode:"no-cors",body:fd});
 resultMsg.style.color = "#0a7f2e";
 resultMsg.textContent = "✅ Merci, vos réponses ont été enregistrées.";
 form.reset();

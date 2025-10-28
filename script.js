@@ -251,9 +251,8 @@ if (cb.value==="Test de cognition") block = createCognitionBlock(zoneName, id);
 if (cb.value==="Autres données") block = createOtherDataBlock(zoneName, id);
 
 if (block){
-block.classList.add("slide");
+block.classList.add("slide","show");
 subQ.appendChild(block);
-toggleSlide(block, true);
 }
 } else if (exists) {
 exists.classList.remove("show");
@@ -313,10 +312,10 @@ mb.addEventListener("change", () => {
 const mid = `${id}-move-${slug(mb.value)}`;
 const exist = details.querySelector("#"+esc(mid));
 if (mb.checked) {
-const block = document.createElement("div");
-block.id = mid;
-block.classList.add("slide");
-toggleSlide(block, true);
+  const block = document.createElement("div");
+  block.id = mid;
+  block.classList.add("slide");
+  toggleSlide(block, true);
 
 // GENOU: Flex/Ext -> Ischio/Quads unités séparées
 if (zoneName==="Genou" && mb.value==="Flexion/Extension") {
@@ -491,12 +490,9 @@ block.appendChild(opc);
 }
 
 details.appendChild(block);
-}
-} else if (exist) {
-toggleSlide(exist, false);
-setTimeout(()=>exist.remove(), 400);
-}
-
+} } else if (exist) {
+  toggleSlide(exist, false);
+  setTimeout(() => exist.remove(), 400);
 }
 }
 });
@@ -560,8 +556,7 @@ const exist = details.querySelector("#"+esc(mid));
 if (mb.checked) {
 const block = document.createElement("div");
 block.id = mid;
-block.className = "slide";
-toggleSlide(block, true);
+block.className = "slide show";
 
 const tools = mobilityToolsFor(zoneName, mb.value);
 block.innerHTML = `
@@ -580,9 +575,8 @@ details.appendChild(block);
 ensureOtherText(block.querySelector(".tools-group"));
 ensureOtherText(block.querySelectorAll(".checkbox-group")[1]);
 } else if (exist) {
-toggleSlide(exist, false);
-setTimeout(()=>exist.remove(), 400);
-}
+exist.classList.remove("show");
+setTimeout(()=>exist.remove(),300);
 }
 });
 });
@@ -745,8 +739,7 @@ d.innerHTML = `
 const yn = d.querySelectorAll("input[name='jumps-yn']");
 const det = d.querySelector("#jumps-detail");
 yn.forEach(r=>r.addEventListener("change",()=>{
-toggleSlide(det, r.value==="Oui" && r.checked);
-toggleCombatBlock();
+det.classList.toggle("show", r.value==="Oui" && r.checked);
 }));
 d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
 return d;
@@ -823,7 +816,7 @@ d.innerHTML = `
 const yn = d.querySelectorAll("input[name='course-yn']");
 const det = d.querySelector("#course-detail");
 yn.forEach(r=>r.addEventListener("change",()=>{
-toggleSlide(det, r.value==="Oui" && r.checked);
+det.classList.toggle("show", r.value==="Oui" && r.checked);
 toggleCombatBlock();
 }));
 
@@ -831,7 +824,7 @@ toggleCombatBlock();
 const dYN = d.querySelectorAll("input[name='decel-yn']");
 const dDet = d.querySelector("#decel-detail");
 dYN.forEach(r=>r.addEventListener("change",()=>{
-toggleSlide(dDet, r.value==="Oui" && r.checked);
+dDet.classList.toggle("show", r.value==="Oui" && r.checked);
 }));
 
 d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
@@ -882,7 +875,7 @@ d.innerHTML = `
 const yn = d.querySelectorAll("input[name='mi-yn']");
 const det = d.querySelector("#mi-detail");
 yn.forEach(r=>r.addEventListener("change",()=>{
-toggleSlide(det, r.value==="Oui" && r.checked);
+det.classList.toggle("show", r.value==="Oui" && r.checked);
 }));
 d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
 return d;
@@ -933,7 +926,7 @@ d.innerHTML = `
 const yn = d.querySelectorAll("input[name='ms-yn']");
 const det = d.querySelector("#ms-detail");
 yn.forEach(r=>r.addEventListener("change",()=>{
-toggleSlide(det, r.value==="Oui" && r.checked);
+det.classList.toggle("show", r.value==="Oui" && r.checked);
 }));
 d.querySelectorAll(".checkbox-group").forEach(g=>ensureOtherText(g));
 return d;
@@ -1189,18 +1182,18 @@ resultMsg.textContent = "⚠️ Erreur d’envoi. Vérifiez votre connexion et r
 * INIT : "Autre" commun + progression
 * ------------------------------------------- */
 const setupCommonAutre = (groupId, inputId) => {
-const group = byId(groupId);
-if(!group) return;
-const cb = group.querySelector("input[value='Autre']");
-const input = byId(inputId);
-if(!cb || !input) return;
-const toggle = () => {
-input.style.display = cb.checked ? "block" : "none";
-input.required = cb.checked;
-if(!cb.checked) input.value="";
-};
-cb.addEventListener("change", toggle);
-toggle();
+  const group = byId(groupId);
+  if(!group) return;
+  const cb = group.querySelector("input[value='Autre']");
+  const input = byId(inputId);
+  if(!cb || !input) return;
+  const toggle = () => {
+    input.style.display = cb.checked ? "block" : "none";
+    input.required = cb.checked;
+    if(!cb.checked) input.value="";
+  };
+  cb.addEventListener("change", toggle);
+  toggle();
 };
 setupCommonAutre("barrieres","barrieres-autre");
 setupCommonAutre("raisons","raisons-autre");
@@ -1211,46 +1204,46 @@ const progressBar = document.getElementById("progress-bar");
 const progressText = document.getElementById("progress-text");
 
 function updateProgress() {
-// Récupère tous les champs visibles et pertinents
-const requiredInputs = Array.from(
-form.querySelectorAll("input[required], input[type='radio'], input[type='checkbox']")
-);
+  // Récupère tous les champs visibles et pertinents
+  const requiredInputs = Array.from(
+    form.querySelectorAll("input[required], input[type='radio'], input[type='checkbox']")
+  );
 
-// Groupes de radios uniques (pour ne pas surcompter)
-const radioGroups = [...new Set(
-requiredInputs
-.filter(i => i.type === "radio")
-.map(i => i.name)
-)];
+  // Groupes de radios uniques (pour ne pas surcompter)
+  const radioGroups = [...new Set(
+    requiredInputs
+      .filter(i => i.type === "radio")
+      .map(i => i.name)
+  )];
 
-// Total de champs "évaluables"
-const totalGroups = requiredInputs.filter(i => i.type !== "radio" && i.type !== "checkbox").length +
-radioGroups.length;
+  // Total de champs "évaluables"
+  const totalGroups = requiredInputs.filter(i => i.type !== "radio" && i.type !== "checkbox").length +
+    radioGroups.length;
 
-let completed = 0;
+  let completed = 0;
 
-// Textes remplis
-requiredInputs
-.filter(i => i.type !== "radio" && i.type !== "checkbox")
-.forEach(i => {
-if (i.value.trim() !== "") completed++;
-});
+  // Textes remplis
+  requiredInputs
+    .filter(i => i.type !== "radio" && i.type !== "checkbox")
+    .forEach(i => {
+      if (i.value.trim() !== "") completed++;
+    });
 
-// Radios cochées
-radioGroups.forEach(group => {
-if (form.querySelector(`input[name="${group}"]:checked`)) completed++;
-});
+  // Radios cochées
+  radioGroups.forEach(group => {
+    if (form.querySelector(`input[name="${group}"]:checked`)) completed++;
+  });
 
-// (Optionnel) cocher les cases contribue aussi à la progression
-// -> active cette ligne si tu veux que les cases cochées comptent :
-// completed += form.querySelectorAll('input[type="checkbox"]:checked').length;
+  // (Optionnel) cocher les cases contribue aussi à la progression
+  // -> active cette ligne si tu veux que les cases cochées comptent :
+  // completed += form.querySelectorAll('input[type="checkbox"]:checked').length;
 
-// Calcul du pourcentage
-const percent = totalGroups > 0 ? Math.min(Math.round((completed / totalGroups) * 100), 100) : 0;
+  // Calcul du pourcentage
+  const percent = totalGroups > 0 ? Math.min(Math.round((completed / totalGroups) * 100), 100) : 0;
 
-// Mise à jour visuelle
-progressBar.style.width = percent + "%";
-progressText.textContent = `Progression : ${percent}%`;
+  // Mise à jour visuelle
+  progressBar.style.width = percent + "%";
+  progressText.textContent = `Progression : ${percent}%`;
 }
 
 // Mises à jour à chaque saisie ou sélection
@@ -1264,22 +1257,22 @@ document.addEventListener("DOMNodeInserted", updateProgress);
 * GESTION FLUIDE DES BLOCS SLIDE (affichage complet et adaptatif)
 * ------------------------------------------- */
 function toggleSlide(element, show) {
-if (!element) return;
-element.style.overflow = "hidden";
-element.style.transition = "max-height 0.4s ease, opacity 0.4s ease";
-if (show) {
-element.style.display = "block";
-// Mesure de la vraie hauteur du contenu
-const fullHeight = element.scrollHeight + "px";
-element.style.maxHeight = fullHeight;
-element.style.opacity = 1;
-} else {
-element.style.maxHeight = 0;
-element.style.opacity = 0;
-setTimeout(() => {
-element.style.display = "none";
-}, 400);
-}
+  if (!element) return;
+  element.style.overflow = "hidden";
+  element.style.transition = "max-height 0.4s ease, opacity 0.4s ease";
+  if (show) {
+    element.style.display = "block";
+    // Mesure de la vraie hauteur du contenu
+    const fullHeight = element.scrollHeight + "px";
+    element.style.maxHeight = fullHeight;
+    element.style.opacity = 1;
+  } else {
+    element.style.maxHeight = 0;
+    element.style.opacity = 0;
+    setTimeout(() => {
+      element.style.display = "none";
+    }, 400);
+  }
 }
 
 // Initialisation au chargement

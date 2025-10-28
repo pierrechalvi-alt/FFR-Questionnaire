@@ -377,6 +377,7 @@ testsEl.innerHTML = `<label>Tests spécifiques</label>
 g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
+opc.querySelector("label")?.remove();
 g.appendChild(opc);
 aWrap.appendChild(g);
 });
@@ -396,6 +397,7 @@ const tests = testsByMuscle["Inverseurs/Éverseurs"]||["Autre"];
 const testsEl = document.createElement("div");
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
+opc.querySelector("label")?.remove();
 g.appendChild(opc);
 block.appendChild(g);
 
@@ -417,6 +419,7 @@ testsEl.innerHTML = `<label>Tests spécifiques</label>
 g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
+opc.querySelector("label")?.remove();
 g.appendChild(opc);
 block.appendChild(g);
 

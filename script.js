@@ -364,7 +364,7 @@ g.className = "subcard";
 g.innerHTML = `<h6>${musc}</h6>`;
 const tools = document.createElement("div");
 tools.innerHTML = `<label>Outils utilisés</label>
-<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+<div class="checkbox-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
 g.appendChild(tools);
 ensureOtherText(tools.querySelector(".tools-group"));
 attachIsokineticHandlers(g);
@@ -389,7 +389,7 @@ g.className = "subcard";
 g.innerHTML = `<h6>Inverseurs/Éverseurs</h6>`;
 const tools = document.createElement("div");
 tools.innerHTML = `<label>Outils utilisés</label>
-<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+<div class="checkbox-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
 g.appendChild(tools);
 ensureOtherText(tools.querySelector(".tools-group"));
 attachIsokineticHandlers(g);
@@ -408,7 +408,7 @@ g.className = "subcard";
 g.innerHTML = `<h6>Intrinsèques du pied</h6>`;
 const tools = document.createElement("div");
 tools.innerHTML = `<label>Outils utilisés</label>
-<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+<div class="checkbox-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
 g.appendChild(tools);
 ensureOtherText(tools.querySelector(".tools-group"));
 attachIsokineticHandlers(g);

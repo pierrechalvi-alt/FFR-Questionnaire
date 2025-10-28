@@ -162,3 +162,24 @@ footer{
 @media(max-width:720px){
   .grid-2{grid-template-columns:1fr}
 }
+/* === ✅ Correction finale Oui/Non (blocs conditionnels) === */
+
+/* Les conteneurs ne doivent pas couper les sections "slide" */
+.card,
+.subcard {
+  overflow: visible !important;
+}
+
+/* Animation d’ouverture/fermeture des blocs Oui/Non */
+.slide {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+
+.slide.show {
+  max-height: 1000px; /* suffisant pour tous les sous-blocs */
+  opacity: 1;
+  overflow: visible;
+}

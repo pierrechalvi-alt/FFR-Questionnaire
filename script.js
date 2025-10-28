@@ -387,22 +387,27 @@ block.innerHTML = `<h5>${mb.value}</h5>`;
 const g = document.createElement("div");
 g.className = "subcard";
 g.innerHTML = `<h6>Inverseurs/Éverseurs</h6>`;
+
+// Outils
 const tools = document.createElement("div");
-tools.innerHTML = `<label>Outils utilisés</label>
-<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+tools.innerHTML = `
+<label>Outils utilisés</label>
+<div class="checkbox-group tools-group">
+${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+</div>`;
 g.appendChild(tools);
 ensureOtherText(tools.querySelector(".tools-group"));
 attachIsokineticHandlers(g);
-const tests = testsByMuscle["Inverseurs/Éverseurs"]||["Autre"];
-const testsEl = document.createElement("div");
-testsEl.innerHTML = `<label>Tests spécifiques</label>
-<div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
-g.appendChild(testsEl);
-ensureOtherText(testsEl.querySelector(".tests-group"));
+
+// ✅ Supprimé : bloc "Tests spécifiques"
+
+// OPC (paramètres + critères)
 const opc = createOPC("",{});
 opc.querySelector(".tools-group").remove();
 g.appendChild(opc);
+
 block.appendChild(g);
+}
 
 } else if (zoneName==="Cheville / Pied" && mb.value==="Intrinsèques du pied") {
 block.innerHTML = `<h5>${mb.value}</h5>`;

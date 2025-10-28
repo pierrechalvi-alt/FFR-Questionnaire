@@ -1,4 +1,4 @@
-/* V22 – Style global (FFR + fix affichage blocs + barre de progression fluide avec % centré) */
+/* === STYLE GLOBAL FFR V22 (stabilisé) === */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
 :root{
@@ -10,7 +10,7 @@
   --accent-clair:#00b8ff;
 }
 
-/* --- RESET + BASE --- */
+/* --- BASE --- */
 *{box-sizing:border-box}
 body{
   font-family:'Poppins',sans-serif;
@@ -27,9 +27,6 @@ header{
 }
 h1{margin:0 0 6px 0;font-weight:600}
 main{max-width:1000px;margin:26px auto;padding:0 16px}
-h2{color:var(--bleu-ffr);margin-top:0}
-
-/* --- CARDS --- */
 .card{
   background:var(--blanc);
   border-radius:10px;
@@ -37,8 +34,7 @@ h2{color:var(--bleu-ffr);margin-top:0}
   margin:18px 0;
   box-shadow:0 3px 8px rgba(0,0,0,.06);
 }
-
-/* --- GROUPES DE CHECKBOX --- */
+h2{color:var(--bleu-ffr);margin-top:0}
 .checkbox-group{
   display:flex;
   flex-wrap:wrap;
@@ -53,8 +49,6 @@ h2{color:var(--bleu-ffr);margin-top:0}
   border-radius:6px;
   background:#eef2f7;
 }
-
-/* --- INPUTS --- */
 input[type="text"]{
   padding:10px;
   border:1px solid #ddd;
@@ -65,7 +59,7 @@ input[type="text"]{
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
 .req{color:#d11c1c}
 
-/* --- ✅ BARRE DE PROGRESSION FLUIDE AVEC POURCENTAGE --- */
+/* --- BARRE DE PROGRESSION --- */
 #progress-container{
   position:relative;
   height:22px;
@@ -78,18 +72,18 @@ input[type="text"]{
 #progress-bar{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,var(--accent) 0%,var(--accent-clair) 100%);
+  background:linear-gradient(90deg, var(--accent) 0%, var(--accent-clair) 100%);
   box-shadow:0 2px 6px rgba(0,0,0,.2);
   border-radius:16px;
   transition:width 0.4s ease-in-out, background 0.3s ease;
 }
-/* % centré sur la barre */
+/* Pourcentage affiché au centre */
 #progress-container::after{
-  content: attr(data-progress) "%";
+  content:attr(data-progress) "%";
   position:absolute;
   top:50%;
   left:50%;
-  transform:translate(-50%,-50%);
+  transform:translate(-50%, -50%);
   color:var(--bleu-ffr);
   font-weight:600;
   font-size:0.85rem;
@@ -112,11 +106,10 @@ button:hover{
   transform:translateY(-1px);
 }
 
-/* --- EFFETS --- */
+/* --- EFFETS ET BLOCS --- */
 .fade-in{opacity:0;transform:translateY(12px);animation:fade .5s ease forwards}
 @keyframes fade{to{opacity:1;transform:none}}
 
-/* --- BLOCS INTERNES --- */
 .subcard{
   border:1px solid #e9edf3;
   border-radius:8px;
@@ -129,26 +122,47 @@ button:hover{
   background:rgba(0,102,204,.03);
 }
 
-/* --- SLIDE ANIMATION --- */
-.slide{
-  overflow:hidden;
-  transition:max-height .35s ease,opacity .35s ease;
-  max-height:0;
-  opacity:0;
-}
-.slide.show{
-  max-height:2000px;
-  opacity:1;
-}
-
-/* --- ✅ Fix hauteur dynamique des sections --- */
+/* --- ADAPTATION BLOCS LONGS (Cheville/Pied, etc.) --- */
 .card-body,
 .zone-block,
-.section-content{
+.section-content,
+.card,
+.slide,
+.subcard,
+.ankle-muscles {
   height:auto !important;
   max-height:none !important;
   overflow:visible !important;
   display:block !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+/* --- LOGIQUE CONDITIONNELLE (Oui / Non) --- */
+.slide,
+.conditionnel,
+.conditional-section {
+  display:none;
+  opacity:0;
+  max-height:0;
+  overflow:hidden;
+  transition:all 0.4s ease;
+}
+.slide.show,
+.slide.active,
+.conditionnel.show,
+.conditionnel.active,
+.conditional-section.show,
+.conditional-section.active {
+  display:block;
+  opacity:1;
+  max-height:5000px;
+  overflow:visible;
+}
+
+/* --- RESPONSIVE --- */
+@media(max-width:720px){
+  .grid-2{grid-template-columns:1fr}
 }
 
 /* --- FOOTER --- */
@@ -156,40 +170,4 @@ footer{
   padding:20px;
   text-align:center;
   color:#777;
-}
-
-/* --- RESPONSIVE --- */
-@media(max-width:720px){
-  .grid-2{grid-template-columns:1fr}
-}
-/* === FIX FINAL AFFICHAGE DES BLOCS DYNAMIQUES (Cheville/Pied, etc.) === */
-.zone-block,
-.section-content,
-.card-body,
-.card,
-.slide,
-.ankle-muscles {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  transition: none !important;
-}
-/* === FIX AFFICHAGE CONDITIONNEL (Oui / Non) === */
-
-/* Par défaut, les sous-sections conditionnelles sont cachées */
-.slide {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: max-height .4s ease, opacity .4s ease;
-}
-
-/* Quand on active une section (via JS → class="show"), elle se déroule */
-.slide.show {
-  max-height: 2000px; /* assez pour contenir le contenu */
-  opacity: 1;
-  overflow: visible;
 }

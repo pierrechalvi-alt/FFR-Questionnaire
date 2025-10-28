@@ -136,3 +136,41 @@ footer{
 @media(max-width:720px){
   .grid-2{grid-template-columns:1fr}
 }
+/* --- ✅ Correction : les blocs dynamiques s’adaptent à la hauteur du contenu --- */
+.card-body, 
+.zone-block, 
+.section-content {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* --- ✅ Nouvelle barre de progression sobre avec pourcentage --- */
+.progress-container {
+  position: relative;
+  width: 100%;
+  background: #f2f2f2;
+  border-radius: 10px;
+  height: 14px;
+  margin: 25px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0077cc, #4da6ff);
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  pointer-events: none;
+}

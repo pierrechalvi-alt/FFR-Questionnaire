@@ -378,11 +378,14 @@ g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
 const toolsGroup = opc.querySelector(".checkbox-group.tools-group");
-if (toolsGroup && toolsGroup.previousElementSibling && toolsGroup.previousElementSibling.tagName === "LABEL") {
-  toolsGroup.previousElementSibling.remove();
+if (toolsGroup) {
+  const lbl = toolsGroup.previousElementSibling;
+  if (lbl && lbl.tagName === "LABEL") lbl.remove();
+  toolsGroup.remove();
 }
 g.appendChild(opc);
-aWrap.appendChild(g);
+block.appendChild(g);
+
 });
 
 } else if (zoneName==="Cheville / Pied" && mb.value==="Éversion/Inversion") {
@@ -401,11 +404,14 @@ const testsEl = document.createElement("div");
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
 const toolsGroup = opc.querySelector(".checkbox-group.tools-group");
-if (toolsGroup && toolsGroup.previousElementSibling && toolsGroup.previousElementSibling.tagName === "LABEL") {
-  toolsGroup.previousElementSibling.remove();
+if (toolsGroup) {
+  const lbl = toolsGroup.previousElementSibling;
+  if (lbl && lbl.tagName === "LABEL") lbl.remove();
+  toolsGroup.remove();
 }
 g.appendChild(opc);
 block.appendChild(g);
+
 
 } else if (zoneName==="Cheville / Pied" && mb.value==="Intrinsèques du pied") {
 block.innerHTML = `<h5>${mb.value}</h5>`;
@@ -426,11 +432,14 @@ g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
 const toolsGroup = opc.querySelector(".checkbox-group.tools-group");
-if (toolsGroup && toolsGroup.previousElementSibling && toolsGroup.previousElementSibling.tagName === "LABEL") {
-  toolsGroup.previousElementSibling.remove();
+if (toolsGroup) {
+  const lbl = toolsGroup.previousElementSibling;
+  if (lbl && lbl.tagName === "LABEL") lbl.remove();
+  toolsGroup.remove();
 }
 g.appendChild(opc);
 block.appendChild(g);
+
 
 } else if (zoneName==="Épaule" && mb.value==="ASH Test") {
 // ASH Test – positions + OPC SANS isocinétisme

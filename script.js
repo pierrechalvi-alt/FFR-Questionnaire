@@ -395,9 +395,6 @@ ensureOtherText(tools.querySelector(".tools-group"));
 attachIsokineticHandlers(g);
 const tests = testsByMuscle["Inverseurs/Éverseurs"]||["Autre"];
 const testsEl = document.createElement("div");
-testsEl.innerHTML = `<label>Tests spécifiques</label>
-<div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
-g.appendChild(testsEl);
 ensureOtherText(testsEl.querySelector(".tests-group"));
 const opc = createOPC("",{});
 opc.querySelector(".tools-group").remove();

@@ -177,3 +177,19 @@ footer{
   visibility: visible !important;
   transition: none !important;
 }
+/* === FIX AFFICHAGE CONDITIONNEL (Oui / Non) === */
+
+/* Par défaut, les sous-sections conditionnelles sont cachées */
+.slide {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height .4s ease, opacity .4s ease;
+}
+
+/* Quand on active une section (via JS → class="show"), elle se déroule */
+.slide.show {
+  max-height: 2000px; /* assez pour contenir le contenu */
+  opacity: 1;
+  overflow: visible;
+}

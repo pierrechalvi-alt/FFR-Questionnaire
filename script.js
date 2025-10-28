@@ -312,9 +312,10 @@ mb.addEventListener("change", () => {
 const mid = `${id}-move-${slug(mb.value)}`;
 const exist = details.querySelector("#"+esc(mid));
 if (mb.checked) {
-const block = document.createElement("div");
-block.id = mid;
-block.className = "slide show";
+  const block = document.createElement("div");
+  block.id = mid;
+  block.classList.add("slide");
+  toggleSlide(block, true);
 
 // GENOU: Flex/Ext -> Ischio/Quads unités séparées
 if (zoneName==="Genou" && mb.value==="Flexion/Extension") {
@@ -387,22 +388,27 @@ block.innerHTML = `<h5>${mb.value}</h5>`;
 const g = document.createElement("div");
 g.className = "subcard";
 g.innerHTML = `<h6>Inverseurs/Éverseurs</h6>`;
+
+// Outils
 const tools = document.createElement("div");
-tools.innerHTML = `<label>Outils utilisés</label>
-<div class="checkbox-group tools-group">${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+tools.innerHTML = `
+<label>Outils utilisés</label>
+<div class="checkbox-group tools-group">
+${toolsForce.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+</div>`;
 g.appendChild(tools);
 ensureOtherText(tools.querySelector(".tools-group"));
 attachIsokineticHandlers(g);
-const tests = testsByMuscle["Inverseurs/Éverseurs"]||["Autre"];
-const testsEl = document.createElement("div");
-testsEl.innerHTML = `<label>Tests spécifiques</label>
-<div class="checkbox-group tests-group">${tests.map(t=>`<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
-g.appendChild(testsEl);
-ensureOtherText(testsEl.querySelector(".tests-group"));
+
+// ✅ Bloc "Tests spécifiques" supprimé ici
+
+// OPC (Paramètres + Critères)
 const opc = createOPC("",{});
 opc.querySelector(".tools-group").remove();
 g.appendChild(opc);
+
 block.appendChild(g);
+}
 
 } else if (zoneName==="Cheville / Pied" && mb.value==="Intrinsèques du pied") {
 block.innerHTML = `<h5>${mb.value}</h5>`;
@@ -484,9 +490,10 @@ block.appendChild(opc);
 }
 
 details.appendChild(block);
-} else if (exist) {
-exist.classList.remove("show");
-setTimeout(()=>exist.remove(),300);
+} } else if (exist) {
+  toggleSlide(exist, false);
+  setTimeout(() => exist.remove(), 400);
+}
 }
 });
 });
@@ -1245,6 +1252,28 @@ form.addEventListener("change", updateProgress);
 
 // Mise à jour aussi lors de la création dynamique de nouveaux éléments
 document.addEventListener("DOMNodeInserted", updateProgress);
+
+/* ---------------------------------------------
+* GESTION FLUIDE DES BLOCS SLIDE (affichage complet et adaptatif)
+* ------------------------------------------- */
+function toggleSlide(element, show) {
+  if (!element) return;
+  element.style.overflow = "hidden";
+  element.style.transition = "max-height 0.4s ease, opacity 0.4s ease";
+  if (show) {
+    element.style.display = "block";
+    // Mesure de la vraie hauteur du contenu
+    const fullHeight = element.scrollHeight + "px";
+    element.style.maxHeight = fullHeight;
+    element.style.opacity = 1;
+  } else {
+    element.style.maxHeight = 0;
+    element.style.opacity = 0;
+    setTimeout(() => {
+      element.style.display = "none";
+    }, 400);
+  }
+}
 
 // Initialisation au chargement
 updateProgress();

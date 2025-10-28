@@ -13,22 +13,6 @@ const byId = id => document.getElementById(id);
 const requiredIfVisible = el => el && el.offsetParent !== null;
 
 /* ---------------------------------------------
-* PROGRESSION
-* ------------------------------------------- */
-const progressBar = byId("progress-bar");
-const progressText = byId("progress-text");
-const form = byId("questionnaireForm");
-const formCards = $$(".card");
-const updateProgress = () => {
-const filled = formCards.filter(sec => sec.querySelector("input:checked") || sec.querySelector("input[type='text'][value]")).length;
-const total = formCards.length;
-const pct = Math.min(100, Math.round((filled/total)*100));
-progressBar.style.width = pct+"%";
-progressText.textContent = `Progression : ${pct}%`;
-};
-document.addEventListener("change", updateProgress);
-
-/* ---------------------------------------------
 * Rôle / Équipe : champs "Autre"
 * ------------------------------------------- */
 const toggleOther = (name, inputId) => {
@@ -1191,21 +1175,77 @@ resultMsg.textContent = "⚠️ Erreur d’envoi. Vérifiez votre connexion et r
 * INIT : "Autre" commun + progression
 * ------------------------------------------- */
 const setupCommonAutre = (groupId, inputId) => {
-const group = byId(groupId);
-if(!group) return;
-const cb = group.querySelector("input[value='Autre']");
-const input = byId(inputId);
-if(!cb || !input) return;
-const toggle = () => {
-input.style.display = cb.checked ? "block" : "none";
-input.required = cb.checked;
-if(!cb.checked) input.value="";
-};
-cb.addEventListener("change", toggle);
-toggle();
+  const group = byId(groupId);
+  if(!group) return;
+  const cb = group.querySelector("input[value='Autre']");
+  const input = byId(inputId);
+  if(!cb || !input) return;
+  const toggle = () => {
+    input.style.display = cb.checked ? "block" : "none";
+    input.required = cb.checked;
+    if(!cb.checked) input.value="";
+  };
+  cb.addEventListener("change", toggle);
+  toggle();
 };
 setupCommonAutre("barrieres","barrieres-autre");
 setupCommonAutre("raisons","raisons-autre");
 
+/* --- GESTION DE LA BARRE DE PROGRESSION --- */
+const form = document.getElementById("questionnaireForm");
+const progressBar = document.getElementById("progress-bar");
+const progressText = document.getElementById("progress-text");
+
+function updateProgress() {
+  // Récupère tous les champs visibles et pertinents
+  const requiredInputs = Array.from(
+    form.querySelectorAll("input[required], input[type='radio'], input[type='checkbox']")
+  );
+
+  // Groupes de radios uniques (pour ne pas surcompter)
+  const radioGroups = [...new Set(
+    requiredInputs
+      .filter(i => i.type === "radio")
+      .map(i => i.name)
+  )];
+
+  // Total de champs "évaluables"
+  const totalGroups = requiredInputs.filter(i => i.type !== "radio" && i.type !== "checkbox").length +
+    radioGroups.length;
+
+  let completed = 0;
+
+  // Textes remplis
+  requiredInputs
+    .filter(i => i.type !== "radio" && i.type !== "checkbox")
+    .forEach(i => {
+      if (i.value.trim() !== "") completed++;
+    });
+
+  // Radios cochées
+  radioGroups.forEach(group => {
+    if (form.querySelector(`input[name="${group}"]:checked`)) completed++;
+  });
+
+  // (Optionnel) cocher les cases contribue aussi à la progression
+  // -> active cette ligne si tu veux que les cases cochées comptent :
+  // completed += form.querySelectorAll('input[type="checkbox"]:checked').length;
+
+  // Calcul du pourcentage
+  const percent = totalGroups > 0 ? Math.min(Math.round((completed / totalGroups) * 100), 100) : 0;
+
+  // Mise à jour visuelle
+  progressBar.style.width = percent + "%";
+  progressText.textContent = `Progression : ${percent}%`;
+}
+
+// Mises à jour à chaque saisie ou sélection
+form.addEventListener("input", updateProgress);
+form.addEventListener("change", updateProgress);
+
+// Mise à jour aussi lors de la création dynamique de nouveaux éléments
+document.addEventListener("DOMNodeInserted", updateProgress);
+
+// Initialisation au chargement
 updateProgress();
-});
+}); // ← bien refermer le DOMContentLoaded ici !

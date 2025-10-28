@@ -364,33 +364,40 @@ block.appendChild(opc);
     g.className = "subcard";
     g.innerHTML = `<h6>${musc}</h6>`;
 
-    // Outils utilisés
+    // --- Outils utilisés (à garder) ---
     const tools = document.createElement("div");
-    tools.innerHTML = `<label>Outils utilisés</label>
-    <div class="checkbox-group tools-group">${toolsForce.map(t =>
-      `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+    tools.innerHTML = `
+      <label>Outils utilisés</label>
+      <div class="checkbox-group tools-group">
+        ${toolsForce.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+      </div>`;
     g.appendChild(tools);
     ensureOtherText(tools.querySelector(".tools-group"));
     attachIsokineticHandlers(g);
 
-    // Tests spécifiques
+    // --- Tests spécifiques (Gastro = liste complète / Soléaire = restreint) ---
     let tests = testsByMuscle[musc] || ["Autre"];
     if (musc === "Soléaire") { tests = ["Isométrie 90°","Autre"]; }
     const testsEl = document.createElement("div");
-    testsEl.innerHTML = `<label>Tests spécifiques</label>
-    <div class="checkbox-group tests-group">${tests.map(t =>
-      `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+    testsEl.innerHTML = `
+      <label>Tests spécifiques</label>
+      <div class="checkbox-group tests-group">
+        ${tests.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+      </div>`;
     g.appendChild(testsEl);
     ensureOtherText(testsEl.querySelector(".tests-group"));
 
-    // Paramètres + Critères (créés par createOPC)
-    const opc = createOPC("",{});
-    const toolsGroup = opc.querySelector(".checkbox-group.tools-group");
-    if (toolsGroup) {
-      const lbl = toolsGroup.previousElementSibling;
-      if (lbl && lbl.tagName === "LABEL") lbl.remove(); // retire le label "Outils utilisés"
-      toolsGroup.remove(); // retire les outils dupliqués
-    }
+    // --- Paramètres & Critères via OPC (on supprime le doublon "Outils utilisés" du OPC) ---
+    const opc = createOPC("", {});
+    (function stripOpcTools(opcRoot){
+      const toolsGroup = opcRoot.querySelector(".checkbox-group.tools-group");
+      if (toolsGroup) {
+        const lbl = toolsGroup.previousElementSibling;
+        if (lbl && lbl.tagName === "LABEL") lbl.remove(); // label "Outils utilisés" dupliqué
+        toolsGroup.remove(); // cases d'outils dupliquées
+      }
+    })(opc);
+
     g.appendChild(opc);
     aWrap.appendChild(g);
   });
@@ -401,23 +408,30 @@ block.appendChild(opc);
   g.className = "subcard";
   g.innerHTML = `<h6>Inverseurs/Éverseurs</h6>`;
 
-  // Outils utilisés
+  // --- Outils utilisés (à garder) ---
   const tools = document.createElement("div");
-  tools.innerHTML = `<label>Outils utilisés</label>
-  <div class="checkbox-group tools-group">${toolsForce.map(t =>
-    `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+  tools.innerHTML = `
+    <label>Outils utilisés</label>
+    <div class="checkbox-group tools-group">
+      ${toolsForce.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+    </div>`;
   g.appendChild(tools);
   ensureOtherText(tools.querySelector(".tools-group"));
   attachIsokineticHandlers(g);
 
-  // Paramètres + Critères
-  const opc = createOPC("",{});
-  const toolsGroup = opc.querySelector(".checkbox-group.tools-group");
-  if (toolsGroup) {
-    const lbl = toolsGroup.previousElementSibling;
-    if (lbl && lbl.tagName === "LABEL") lbl.remove();
-    toolsGroup.remove();
-  }
+  // (pas de "Tests spécifiques" pour Éversion/Inversion dans le rendu cible)
+
+  // --- Paramètres & Critères via OPC (on retire le doublon d'outils) ---
+  const opc = createOPC("", {});
+  (function stripOpcTools(opcRoot){
+    const toolsGroup = opcRoot.querySelector(".checkbox-group.tools-group");
+    if (toolsGroup) {
+      const lbl = toolsGroup.previousElementSibling;
+      if (lbl && lbl.tagName === "LABEL") lbl.remove();
+      toolsGroup.remove();
+    }
+  })(opc);
+
   g.appendChild(opc);
   block.appendChild(g);
 
@@ -427,34 +441,43 @@ block.appendChild(opc);
   g.className = "subcard";
   g.innerHTML = `<h6>Intrinsèques du pied</h6>`;
 
-  // Outils utilisés
+  // --- Outils utilisés (à garder) ---
   const tools = document.createElement("div");
-  tools.innerHTML = `<label>Outils utilisés</label>
-  <div class="checkbox-group tools-group">${toolsForce.map(t =>
-    `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+  tools.innerHTML = `
+    <label>Outils utilisés</label>
+    <div class="checkbox-group tools-group">
+      ${toolsForce.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+    </div>`;
   g.appendChild(tools);
   ensureOtherText(tools.querySelector(".tools-group"));
   attachIsokineticHandlers(g);
 
-  // Tests spécifiques
-  const tests = testsByMuscle["Intrinsèques du pied"] || ["Autre"];
+  // --- Tests spécifiques (Toe/Short Foot/Autre) ---
+  const tests = ["Toe Curl test","Short Foot test","Autre"];
   const testsEl = document.createElement("div");
-  testsEl.innerHTML = `<label>Tests spécifiques</label>
-  <div class="checkbox-group tests-group">${tests.map(t =>
-    `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}</div>`;
+  testsEl.innerHTML = `
+    <label>Tests spécifiques</label>
+    <div class="checkbox-group tests-group">
+      ${tests.map(t => `<label><input type="checkbox" value="${t}"> ${t}</label>`).join("")}
+    </div>`;
   g.appendChild(testsEl);
   ensureOtherText(testsEl.querySelector(".tests-group"));
 
-  // Paramètres + Critères
-  const opc = createOPC("",{});
-  const toolsGroup = opc.querySelector(".checkbox-group.tools-group");
-  if (toolsGroup) {
-    const lbl = toolsGroup.previousElementSibling;
-    if (lbl && lbl.tagName === "LABEL") lbl.remove();
-    toolsGroup.remove();
-  }
+  // --- Paramètres & Critères via OPC (on retire le doublon d'outils) ---
+  const opc = createOPC("", {});
+  (function stripOpcTools(opcRoot){
+    const toolsGroup = opcRoot.querySelector(".checkbox-group.tools-group");
+    if (toolsGroup) {
+      const lbl = toolsGroup.previousElementSibling;
+      if (lbl && lbl.tagName === "LABEL") lbl.remove();
+      toolsGroup.remove();
+    }
+  })(opc);
+
   g.appendChild(opc);
   block.appendChild(g);
+}
+
 } else if (zoneName==="Épaule" && mb.value==="ASH Test") {
 // ASH Test – positions + OPC SANS isocinétisme
 block.innerHTML = `<h5>ASH Test</h5>

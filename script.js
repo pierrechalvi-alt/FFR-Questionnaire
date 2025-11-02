@@ -1261,8 +1261,8 @@ submitBtn.addEventListener("click", async (e) => {
   const payload = buildPayload();
 
 // --- Encodage pour Google Form (version stable) ---
-const textPayload = JSON.stringify(payload, null, 2);
-const formBody = `${GOOGLE_ENTRY_KEY}=${encodeURIComponent(textPayload)}`;
+const formBody = `${GOOGLE_ENTRY_KEY}=${encodeURIComponent("Test OK")}`;
+
 
 try {
   await fetch(GOOGLE_FORM_URL, {

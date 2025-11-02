@@ -1051,7 +1051,7 @@ toggleGlobalsBlock();
 * ------------------------------------------- */
 const resultMsg = byId("resultMessage");
 const submitBtn = byId("submitBtn");
-const GOOGLE_FORM_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSeNok3wNrafUFIM2VnAo4NKQpdZDaDyFDeVS8dZbXFyt_ySyA/formResponse";
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeNok3wNrafUFIM2VnAo4NKQpdZDaDyFDeVS8dZbXFyt_ySyA/formResponse";
 const GOOGLE_ENTRY_KEY = "entry.1237244370";
 
 const gatherChecked = scope => [...scope.querySelectorAll("input[type='checkbox']:checked")].map(i=>i.value);

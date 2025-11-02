@@ -1047,7 +1047,7 @@ toggleGlobalsBlock();
 });
 
 /* ---------------------------------------------
- * VALIDATION + ENVOI GOOGLE FORM (version corrigée)
+ * VALIDATION + ENVOI GOOGLE FORM (version finale stable)
  * ------------------------------------------- */
 const resultMsg = byId("resultMessage");
 const submitBtn = byId("submitBtn");
@@ -1055,100 +1055,103 @@ const GOOGLE_FORM_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSeNok3wNra
 const GOOGLE_ENTRY_KEY = "entry.1237244370";
 
 /* =============================================
- * BUILD PAYLOAD – version texte compatible Google Form
+ * BUILD PAYLOAD – version texte claire et compatible
  * ============================================= */
 const buildPayload = () => {
-  const payload = {};
+  let text = "";
 
-  // --- Informations générales ---
-  payload.nom = byId("nom").value.trim();
-  payload.prenom = byId("prenom").value.trim();
-  payload.role = (document.querySelector("input[name='role']:checked") || {}).value || "";
-  payload.equipe = (document.querySelector("input[name='equipe']:checked") || {}).value || "";
+  // --- Informations principales ---
+  text += `Nom : ${byId("nom").value.trim()}\n`;
+  text += `Prénom : ${byId("prenom").value.trim()}\n`;
+  text += `Rôle : ${(document.querySelector("input[name='role']:checked") || {}).value || ""}\n`;
+  text += `Équipe : ${(document.querySelector("input[name='equipe']:checked") || {}).value || ""}\n\n`;
 
+  // --- Zones anatomiques sélectionnées ---
   const logical = getLogicalZones();
-  const zonesDetails = [];
-
-  // --- Parcours de chaque zone cochée ---
   logical.forEach(z => {
     const sec = byId(`section-${slug(z)}`);
     if (!sec) return;
 
-    const bloc = [`=== ${z} ===`];
+    text += `=== ${z.toUpperCase()} ===\n`;
 
     // Moments
-    const moments = gatherChecked(sec.querySelector(".moment"));
-    if (moments.length) bloc.push(`Moments : ${moments.join(", ")}`);
+    const moments = gatherChecked(sec.querySelectorAll(".moment input:checked"));
+    if (moments.length) text += `Moments : ${moments.join(", ")}\n`;
 
-    // Force
+    // Types de tests
+    const types = gatherChecked(sec.querySelectorAll(".types input:checked"));
+    if (types.length) text += `Types : ${types.join(", ")}\n`;
+
+    // FORCE
     const force = sec.querySelector(`#sub-${slug(z)}-force`);
     if (force) {
       const moves = [...force.querySelectorAll(".force-moves input:checked")].map(i => i.value);
       moves.forEach(mv => {
-        const mid = `#sub-${slug(z)}-force-move-${slug(mv)}`;
-        const moveBlock = force.querySelector(mid);
+        const moveBlock = force.querySelector(`#sub-${slug(z)}-force-move-${slug(mv)}`);
         if (!moveBlock) return;
-        bloc.push(`\n• Force (${mv})`);
-
+        text += `\n→ Force (${mv})\n`;
         const tools = gatherChecked(moveBlock.querySelectorAll(".tools-group input:checked"));
         const tests = gatherChecked(moveBlock.querySelectorAll(".tests-group input:checked"));
         const params = gatherChecked(moveBlock.querySelectorAll(".params-group input:checked"));
         const crit = gatherChecked(moveBlock.querySelectorAll(".crit-group input:checked"));
         const isoSpeed = gatherChecked(moveBlock.querySelectorAll(".iso-speed input:checked"));
         const isoMode = gatherChecked(moveBlock.querySelectorAll(".iso-mode input:checked"));
-
-        if (tools.length) bloc.push(`   Outils : ${tools.join(", ")}`);
-        if (tests.length) bloc.push(`   Tests spécifiques : ${tests.join(", ")}`);
-        if (params.length) bloc.push(`   Paramètres : ${params.join(", ")}`);
-        if (crit.length) bloc.push(`   Critères : ${crit.join(", ")}`);
+        if (tools.length) text += `   Outils : ${tools.join(", ")}\n`;
+        if (tests.length) text += `   Tests spécifiques : ${tests.join(", ")}\n`;
+        if (params.length) text += `   Paramètres : ${params.join(", ")}\n`;
+        if (crit.length) text += `   Critères : ${crit.join(", ")}\n`;
         if (isoSpeed.length || isoMode.length)
-          bloc.push(`   Isocinétisme : vitesses [${isoSpeed.join(", ")}], modes [${isoMode.join(", ")}]`);
+          text += `   Isocinétisme : vitesses [${isoSpeed.join(", ")}], modes [${isoMode.join(", ")}]\n`;
       });
     }
 
-    // Mobilité
+    // MOBILITÉ
     const mob = sec.querySelector(`#sub-${slug(z)}-mobilite`);
     if (mob) {
       const moves = [...mob.querySelectorAll(".mob-moves input:checked")].map(i => i.value);
       moves.forEach(mv => {
-        const mid = `#sub-${slug(z)}-mobilite-move-${slug(mv)}`;
-        const moveBlock = mob.querySelector(mid);
+        const moveBlock = mob.querySelector(`#sub-${slug(z)}-mobilite-move-${slug(mv)}`);
         if (!moveBlock) return;
-        bloc.push(`\n• Mobilité (${mv})`);
-
+        text += `\n→ Mobilité (${mv})\n`;
         const tools = gatherChecked(moveBlock.querySelectorAll(".tools-group input:checked"));
         const crit = gatherChecked(moveBlock.querySelectorAll(".checkbox-group")[1]?.querySelectorAll("input:checked") || []);
-        if (tools.length) bloc.push(`   Outils : ${tools.join(", ")}`);
-        if (crit.length) bloc.push(`   Critères : ${crit.join(", ")}`);
+        if (tools.length) text += `   Outils : ${tools.join(", ")}\n`;
+        if (crit.length) text += `   Critères : ${crit.join(", ")}\n`;
       });
     }
 
-    // Proprio / questionnaires / cognition
+    // PROPRIOCEPTION
     const proprio = sec.querySelector(`#sub-${slug(z)}-proprioception-equilibre`);
     if (proprio) {
       const tests = gatherChecked(proprio.querySelectorAll("input:checked"));
-      if (tests.length) bloc.push(`\n• Proprioception / Équilibre : ${tests.join(", ")}`);
+      if (tests.length) text += `\n→ Proprioception / Équilibre : ${tests.join(", ")}\n`;
     }
 
+    // QUESTIONNAIRES
     const quest = sec.querySelector(`#sub-${slug(z)}-questionnaires`);
     if (quest) {
       const qs = gatherChecked(quest.querySelectorAll("input:checked"));
-      if (qs.length) bloc.push(`\n• Questionnaires : ${qs.join(", ")}`);
+      if (qs.length) text += `\n→ Questionnaires : ${qs.join(", ")}\n`;
     }
 
+    // COGNITION
     const cog = sec.querySelector(`#sub-${slug(z)}-test-de-cognition`);
     if (cog) {
       const cs = gatherChecked(cog.querySelectorAll("input:checked"));
-      if (cs.length) bloc.push(`\n• Test de cognition : ${cs.join(", ")}`);
+      if (cs.length) text += `\n→ Test de cognition : ${cs.join(", ")}\n`;
     }
 
-    zonesDetails.push(bloc.join("\n"));
+    // AUTRES DONNÉES
+    const od = sec.querySelector(`#sub-${slug(z)}-autres-donnees`);
+    if (od) {
+      const t = od.querySelector("input")?.value.trim();
+      if (t) text += `\n→ Autres données : ${t}\n`;
+    }
+
+    text += `\n`;
   });
 
-  // Texte unique final envoyé au Google Form
-  payload.zones_details = zonesDetails.join("\n\n");
-
-  return payload;
+  return text.trim();
 };
 
 /* =============================================
@@ -1158,7 +1161,6 @@ submitBtn.addEventListener("click", async (e) => {
   e.preventDefault();
   resultMsg.textContent = "";
 
-  // --- Validation basique inchangée ---
   const err = validate();
   if (err) {
     resultMsg.style.color = "#d11c1c";
@@ -1167,24 +1169,10 @@ submitBtn.addEventListener("click", async (e) => {
     return;
   }
 
-  // --- Construction du payload texte ---
-  const payload = buildPayload();
+  const text = buildPayload();
   const fd = new FormData();
+  fd.append(GOOGLE_ENTRY_KEY, text);
 
-  // On envoie un texte clair et complet
-  const texteFinal = [
-    `Nom : ${payload.nom}`,
-    `Prénom : ${payload.prenom}`,
-    `Rôle : ${payload.role}`,
-    `Équipe : ${payload.equipe}`,
-    "",
-    "=== DÉTAILS ===",
-    payload.zones_details
-  ].join("\n");
-
-  fd.append(GOOGLE_ENTRY_KEY, texteFinal);
-
-  // --- Envoi du formulaire ---
   try {
     await fetch(GOOGLE_FORM_URL, { method: "POST", mode: "no-cors", body: fd });
     resultMsg.style.color = "#0a7f2e";

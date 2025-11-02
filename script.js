@@ -1244,37 +1244,59 @@ if (raiAutreCb && raiAutreCb.checked && !byId("raisons-autre").value.trim()) ret
 return "";
 };
 
-submitBtn.addEventListener("click", async (e)=>{
-e.preventDefault();
-resultMsg.textContent="";
-const err = validate();
-if (err){
-resultMsg.style.color = "#d11c1c";
-resultMsg.textContent = "⚠️ " + err;
-window.scrollTo({top:0,behavior:"smooth"});
-return;
-}
+submitBtn.addEventListener("click", async (e) => {
+  e.preventDefault();
+  resultMsg.textContent = "";
 
-const payload = buildPayload();
-const fd = new FormData();
-fd.append(GOOGLE_ENTRY_KEY, JSON.stringify(payload));
+  // --- Validation des champs obligatoires ---
+  const err = validate();
+  if (err) {
+    resultMsg.style.color = "#d11c1c";
+    resultMsg.textContent = "⚠️ " + err;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
 
-try{
-await fetch(GOOGLE_FORM_URL, {method:"POST",mode:"no-cors",body:fd});
-resultMsg.style.color = "#0a7f2e";
-resultMsg.textContent = "✅ Merci, vos réponses ont été enregistrées.";
-form.reset();
-byId("zoneQuestions").innerHTML = "";
-byId("globalsSection").style.display="none";
-byId("globalBlocks").innerHTML = "";
-jumpsBlock = courseBlock = globalMIBlock = globalMSBlock = combatBlock = null;
-updateProgress();
-window.scrollTo({top:0,behavior:"smooth"});
-}catch(err){
-resultMsg.style.color = "#d11c1c";
-resultMsg.textContent = "⚠️ Erreur d’envoi. Vérifiez votre connexion et réessayez.";
-}
+  // --- Construction du payload JSON ---
+  const payload = buildPayload();
+
+  // --- Encodage pour Google Form ---
+  const params = new URLSearchParams();
+  params.append(GOOGLE_ENTRY_KEY, JSON.stringify(payload));
+
+  try {
+    await fetch(
+      "https://docs.google.com/forms/d/e/1FAIpQLSeNok3wNrafUFIM2VnAo4NKQpdZDaDyFDeVS8dZbXFyt_ySyA/formResponse",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        },
+        body: params.toString(),
+        mode: "no-cors",
+      }
+    );
+
+    // --- Message de confirmation ---
+    resultMsg.style.color = "#0a7f2e";
+    resultMsg.textContent = "✅ Merci, vos réponses ont été enregistrées.";
+
+    // --- Réinitialisation du formulaire ---
+    form.reset();
+    byId("zoneQuestions").innerHTML = "";
+    byId("globalsSection").style.display = "none";
+    byId("globalBlocks").innerHTML = "";
+    jumpsBlock = courseBlock = globalMIBlock = globalMSBlock = combatBlock = null;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (err) {
+    resultMsg.style.color = "#d11c1c";
+    resultMsg.textContent =
+      "⚠️ Erreur d’envoi. Vérifiez votre connexion et réessayez.";
+    console.error("Erreur d’envoi Google Form :", err);
+  }
 });
+
 
 /* ---------------------------------------------
 * INIT : "Autre" commun + progression

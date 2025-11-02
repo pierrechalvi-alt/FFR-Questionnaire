@@ -1274,19 +1274,6 @@ try {
     mode: "no-cors",
   });
 
-  try {
-    await fetch(
-      "https://docs.google.com/forms/d/e/1FAIpQLSeNok3wNrafUFIM2VnAo4NKQpdZDaDyFDeVS8dZbXFyt_ySyA/formResponse",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-        },
-        body: params.toString(),
-        mode: "no-cors",
-      }
-    );
-
     // --- Message de confirmation ---
     resultMsg.style.color = "#0a7f2e";
     resultMsg.textContent = "✅ Merci, vos réponses ont été enregistrées.";
@@ -1306,8 +1293,7 @@ try {
     console.error("Erreur d’envoi Google Form :", err);
   }
 });
-
-
+  
 /* ---------------------------------------------
 * INIT : "Autre" commun + progression
 * ------------------------------------------- */

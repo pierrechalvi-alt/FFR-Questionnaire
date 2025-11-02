@@ -1058,7 +1058,6 @@ const gatherChecked = scope => [...scope.querySelectorAll("input[type='checkbox'
 const gatherRadio = scope => (scope.querySelector("input[type='radio']:checked")||{}).value || "";
 
 const buildPayload = () => {
-  // Helper local : transforme un NodeList d'inputs cochés en tableau de .value
   const listVals = (nodeList) => [...nodeList].map(i => i.value);
 
   const payload = {};
@@ -1074,7 +1073,7 @@ const buildPayload = () => {
   // --- Zones sélectionnées
   payload.zones = selectedZones();
 
-  // --- Détails par zone (Tête/Rachis fusionnées)
+  // --- Détails par zone
   const logical = getLogicalZones();
   payload.zones_details = [];
 
@@ -1084,7 +1083,6 @@ const buildPayload = () => {
 
     const zoneData = {
       zone,
-      // ICI on passe bien un ÉLÉMENT à gatherChecked ✅
       moments: gatherChecked(sec.querySelector(".moment")),
       types: gatherChecked(sec.querySelector(".types")),
       force: [],
@@ -1105,7 +1103,6 @@ const buildPayload = () => {
 
         const data = {
           mouvement: mv,
-          // ICI on part de querySelectorAll -> on utilise listVals (pas gatherChecked) ✅
           outils: listVals(moveBlock.querySelectorAll(".tools-group input:checked")),
           tests: listVals(moveBlock.querySelectorAll(".tests-group input:checked")),
           params: listVals(moveBlock.querySelectorAll(".params-group input:checked")),
@@ -1113,6 +1110,15 @@ const buildPayload = () => {
           isoVitesses: listVals(moveBlock.querySelectorAll(".iso-speed input:checked")),
           isoModes: listVals(moveBlock.querySelectorAll(".iso-mode input:checked"))
         };
+
+        // --- Champs "Autre" dans la section Force
+        const otherInputs = moveBlock.querySelectorAll("input.other-input");
+        otherInputs.forEach(inp => {
+          const label = inp.closest(".other-wrap")?.querySelector("label")?.innerText || "Autre";
+          const val = inp.value.trim();
+          if (val) data[label] = val;
+        });
+
         zoneData.force.push(data);
       });
     }
@@ -1128,9 +1134,17 @@ const buildPayload = () => {
         const data = {
           mouvement: mv,
           outils: listVals(moveBlock.querySelectorAll(".tools-group input:checked")),
-          // le 2e groupe de la section mobilité contient les critères
           criteres: listVals((moveBlock.querySelectorAll(".checkbox-group")[1] || moveBlock).querySelectorAll("input:checked"))
         };
+
+        // --- Champs "Autre" dans la section Mobilité
+        const otherInputs = moveBlock.querySelectorAll("input.other-input");
+        otherInputs.forEach(inp => {
+          const label = inp.closest(".other-wrap")?.querySelector("label")?.innerText || "Autre";
+          const val = inp.value.trim();
+          if (val) data[label] = val;
+        });
+
         zoneData.mobilite.push(data);
       });
     }
@@ -1139,18 +1153,33 @@ const buildPayload = () => {
     const proprio = sec.querySelector(`#sub-${slug(zone)}-proprioception-equilibre`);
     if (proprio) {
       zoneData.proprio = listVals(proprio.querySelectorAll("input:checked"));
+      const otherInputs = proprio.querySelectorAll("input.other-input");
+      otherInputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val) zoneData.proprio.push(`Autre: ${val}`);
+      });
     }
 
     // ----- QUESTIONNAIRES -----
     const quest = sec.querySelector(`#sub-${slug(zone)}-questionnaires`);
     if (quest) {
       zoneData.questionnaires = listVals(quest.querySelectorAll("input:checked"));
+      const otherInputs = quest.querySelectorAll("input.other-input");
+      otherInputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val) zoneData.questionnaires.push(`Autre: ${val}`);
+      });
     }
 
     // ----- COGNITION -----
     const cog = sec.querySelector(`#sub-${slug(zone)}-test-de-cognition`);
     if (cog) {
       zoneData.cognition = listVals(cog.querySelectorAll("input:checked"));
+      const otherInputs = cog.querySelectorAll("input.other-input");
+      otherInputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val) zoneData.cognition.push(`Autre: ${val}`);
+      });
     }
 
     // ----- AUTRES DONNÉES -----
@@ -1174,6 +1203,14 @@ const buildPayload = () => {
       gb.sauts.params = listVals(groups[1].querySelectorAll("input:checked"));
       gb.sauts.outils = listVals(groups[2].querySelectorAll("input:checked"));
       gb.sauts.criteres = listVals(groups[3].querySelectorAll("input:checked"));
+
+      // Champs "Autre" sauts
+      const otherInputs = jumps.querySelectorAll("input.other-input");
+      otherInputs.forEach(inp => {
+        const label = inp.closest(".other-wrap")?.querySelector("label")?.innerText || "Autre";
+        const val = inp.value.trim();
+        if (val) gb.sauts[label] = val;
+      });
     }
   }
 
@@ -1190,6 +1227,14 @@ const buildPayload = () => {
       gb.course.deceleration = { fait: dYN, details: (dYN === "Oui") ? dText : "" };
       gb.course.outils = listVals(groups[4].querySelectorAll("input:checked"));
       gb.course.criteres = listVals(groups[5].querySelectorAll("input:checked"));
+
+      // Champs "Autre" course
+      const otherInputs = course.querySelectorAll("input.other-input");
+      otherInputs.forEach(inp => {
+        const label = inp.closest(".other-wrap")?.querySelector("label")?.innerText || "Autre";
+        const val = inp.value.trim();
+        if (val) gb.course[label] = val;
+      });
     }
   }
 
@@ -1202,6 +1247,14 @@ const buildPayload = () => {
       gb.mi.outils = listVals(groups[1].querySelectorAll("input:checked"));
       gb.mi.params = listVals(groups[2].querySelectorAll("input:checked"));
       gb.mi.criteres = listVals(groups[3].querySelectorAll("input:checked"));
+
+      // Champs "Autre" MI
+      const otherInputs = mi.querySelectorAll("input.other-input");
+      otherInputs.forEach(inp => {
+        const label = inp.closest(".other-wrap")?.querySelector("label")?.innerText || "Autre";
+        const val = inp.value.trim();
+        if (val) gb.mi[label] = val;
+      });
     }
   }
 
@@ -1214,11 +1267,30 @@ const buildPayload = () => {
       gb.ms.outils = listVals(groups[1].querySelectorAll("input:checked"));
       gb.ms.params = listVals(groups[2].querySelectorAll("input:checked"));
       gb.ms.criteres = listVals(groups[3].querySelectorAll("input:checked"));
+
+      // Champs "Autre" MS
+      const otherInputs = ms.querySelectorAll("input.other-input");
+      otherInputs.forEach(inp => {
+        const label = inp.closest(".other-wrap")?.querySelector("label")?.innerText || "Autre";
+        const val = inp.value.trim();
+        if (val) gb.ms[label] = val;
+      });
     }
   }
 
   const combat = byId("global-combat");
-  if (combat) gb.combat = { fait: gatherRadio(combat) };
+  if (combat) {
+    gb.combat = { fait: gatherRadio(combat) };
+
+    // Champs "Autre" combat
+    const otherInputs = combat.querySelectorAll("input.other-input");
+    otherInputs.forEach(inp => {
+      const label = inp.closest(".other-wrap")?.querySelector("label")?.innerText || "Autre";
+      const val = inp.value.trim();
+      if (val) gb.combat[label] = val;
+    });
+  }
+
   payload.globaux = gb;
 
   // --- Questions communes
@@ -1234,7 +1306,6 @@ const buildPayload = () => {
 
   return payload;
 };
-
 
 const validate = () => {
 if (!byId("nom").value.trim() || !byId("prenom").value.trim()) return "Merci de renseigner Nom et Prénom.";

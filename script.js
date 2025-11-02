@@ -1047,169 +1047,233 @@ toggleGlobalsBlock();
 });
 
 /* ---------------------------------------------
- * VALIDATION + ENVOI GOOGLE FORM (robuste)
- * ------------------------------------------- */
+* VALIDATION + ENVOI GOOGLE FORM
+* ------------------------------------------- */
 const resultMsg = byId("resultMessage");
 const submitBtn = byId("submitBtn");
-// ⚠️ URL SANS /u/0
-const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeNok3wNrafUFIM2VnAo4NKQpdZDaDyFDeVS8dZbXFyt_ySyA/formResponse";
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSeNok3wNrafUFIM2VnAo4NKQpdZDaDyFDeVS8dZbXFyt_ySyA/formResponse";
 const GOOGLE_ENTRY_KEY = "entry.1237244370";
 
+const gatherChecked = scope => [...scope.querySelectorAll("input[type='checkbox']:checked")].map(i=>i.value);
+const gatherRadio = scope => (scope.querySelector("input[type='radio']:checked")||{}).value || "";
+
 /* =============================================
- * BUILD PAYLOAD – version texte claire et compatible
+ * BUILD PAYLOAD – version enrichie (tous sous-détails inclus)
  * ============================================= */
 const buildPayload = () => {
-  let text = "";
+  const payload = {};
 
-  // --- Informations principales ---
-  text += `Nom : ${byId("nom").value.trim()}\n`;
-  text += `Prénom : ${byId("prenom").value.trim()}\n`;
-  text += `Rôle : ${(document.querySelector("input[name='role']:checked") || {}).value || ""}\n`;
-  text += `Équipe : ${(document.querySelector("input[name='equipe']:checked") || {}).value || ""}\n\n`;
+  // --- Infos principales
+  payload.nom = byId("nom").value.trim();
+  payload.prenom = byId("prenom").value.trim();
+  payload.role = (document.querySelector("input[name='role']:checked") || {}).value || "";
+  payload.role_autre = byId("role-autre").style.display !== "none" ? byId("role-autre").value.trim() : "";
+  payload.equipe = (document.querySelector("input[name='equipe']:checked") || {}).value || "";
+  payload.equipe_autre = byId("equipe-autre").style.display !== "none" ? byId("equipe-autre").value.trim() : "";
 
-  // --- Zones anatomiques sélectionnées ---
   const logical = getLogicalZones();
-  logical.forEach(z => {
-    const sec = byId(`section-${slug(z)}`);
+  payload.zones_details = [];
+
+  logical.forEach(zone => {
+    const sec = byId(`section-${slug(zone)}`);
     if (!sec) return;
 
-    text += `=== ${z.toUpperCase()} ===\n`;
+    const zoneData = {
+      zone,
+      moments: gatherChecked(sec.querySelectorAll(".moment input:checked")),
+      types: gatherChecked(sec.querySelectorAll(".types input:checked")),
+      force: [],
+      mobilite: [],
+      proprio: [],
+      questionnaires: [],
+      cognition: [],
+      autres_donnees: []
+    };
 
-    // Moments
-    const moments = gatherChecked(sec.querySelectorAll(".moment input:checked"));
-    if (moments.length) text += `Moments : ${moments.join(", ")}\n`;
-
-    // Types de tests
-    const types = gatherChecked(sec.querySelectorAll(".types input:checked"));
-    if (types.length) text += `Types : ${types.join(", ")}\n`;
-
-    // FORCE
-    const force = sec.querySelector(`#sub-${slug(z)}-force`);
+    // --- Force
+    const force = sec.querySelector(`#sub-${slug(zone)}-force`);
     if (force) {
       const moves = [...force.querySelectorAll(".force-moves input:checked")].map(i => i.value);
       moves.forEach(mv => {
-        const moveBlock = force.querySelector(`#sub-${slug(z)}-force-move-${slug(mv)}`);
+        const moveBlock = force.querySelector(`#sub-${slug(zone)}-force-move-${slug(mv)}`);
         if (!moveBlock) return;
-        text += `\n→ Force (${mv})\n`;
-        const tools = gatherChecked(moveBlock.querySelectorAll(".tools-group input:checked"));
-        const tests = gatherChecked(moveBlock.querySelectorAll(".tests-group input:checked"));
-        const params = gatherChecked(moveBlock.querySelectorAll(".params-group input:checked"));
-        const crit = gatherChecked(moveBlock.querySelectorAll(".crit-group input:checked"));
-        const isoSpeed = gatherChecked(moveBlock.querySelectorAll(".iso-speed input:checked"));
-        const isoMode = gatherChecked(moveBlock.querySelectorAll(".iso-mode input:checked"));
-        if (tools.length) text += `   Outils : ${tools.join(", ")}\n`;
-        if (tests.length) text += `   Tests spécifiques : ${tests.join(", ")}\n`;
-        if (params.length) text += `   Paramètres : ${params.join(", ")}\n`;
-        if (crit.length) text += `   Critères : ${crit.join(", ")}\n`;
-        if (isoSpeed.length || isoMode.length)
-          text += `   Isocinétisme : vitesses [${isoSpeed.join(", ")}], modes [${isoMode.join(", ")}]\n`;
+
+        const data = {
+          mouvement: mv,
+          outils: gatherChecked(moveBlock.querySelectorAll(".tools-group input:checked")),
+          tests: gatherChecked(moveBlock.querySelectorAll(".tests-group input:checked")),
+          params: gatherChecked(moveBlock.querySelectorAll(".params-group input:checked")),
+          criteres: gatherChecked(moveBlock.querySelectorAll(".crit-group input:checked")),
+          isoVitesses: gatherChecked(moveBlock.querySelectorAll(".iso-speed input:checked")),
+          isoModes: gatherChecked(moveBlock.querySelectorAll(".iso-mode input:checked"))
+        };
+        zoneData.force.push(data);
       });
     }
 
-    // MOBILITÉ
-    const mob = sec.querySelector(`#sub-${slug(z)}-mobilite`);
+    // --- Mobilité
+    const mob = sec.querySelector(`#sub-${slug(zone)}-mobilite`);
     if (mob) {
       const moves = [...mob.querySelectorAll(".mob-moves input:checked")].map(i => i.value);
       moves.forEach(mv => {
-        const moveBlock = mob.querySelector(`#sub-${slug(z)}-mobilite-move-${slug(mv)}`);
+        const moveBlock = mob.querySelector(`#sub-${slug(zone)}-mobilite-move-${slug(mv)}`);
         if (!moveBlock) return;
-        text += `\n→ Mobilité (${mv})\n`;
-        const tools = gatherChecked(moveBlock.querySelectorAll(".tools-group input:checked"));
-        const crit = gatherChecked(moveBlock.querySelectorAll(".checkbox-group")[1]?.querySelectorAll("input:checked") || []);
-        if (tools.length) text += `   Outils : ${tools.join(", ")}\n`;
-        if (crit.length) text += `   Critères : ${crit.join(", ")}\n`;
+        const data = {
+          mouvement: mv,
+          outils: gatherChecked(moveBlock.querySelectorAll(".tools-group input:checked")),
+          criteres: gatherChecked(moveBlock.querySelectorAll(".checkbox-group")[1]?.querySelectorAll("input:checked") || [])
+        };
+        zoneData.mobilite.push(data);
       });
     }
 
-    // PROPRIOCEPTION
-    const proprio = sec.querySelector(`#sub-${slug(z)}-proprioception-equilibre`);
-    if (proprio) {
-      const tests = gatherChecked(proprio.querySelectorAll("input:checked"));
-      if (tests.length) text += `\n→ Proprioception / Équilibre : ${tests.join(", ")}\n`;
-    }
+    // --- Proprio / Équilibre
+    const proprio = sec.querySelector(`#sub-${slug(zone)}-proprioception-equilibre`);
+    if (proprio) zoneData.proprio = gatherChecked(proprio.querySelectorAll("input:checked"));
 
-    // QUESTIONNAIRES
-    const quest = sec.querySelector(`#sub-${slug(z)}-questionnaires`);
-    if (quest) {
-      const qs = gatherChecked(quest.querySelectorAll("input:checked"));
-      if (qs.length) text += `\n→ Questionnaires : ${qs.join(", ")}\n`;
-    }
+    // --- Questionnaires
+    const quest = sec.querySelector(`#sub-${slug(zone)}-questionnaires`);
+    if (quest) zoneData.questionnaires = gatherChecked(quest.querySelectorAll("input:checked"));
 
-    // COGNITION
-    const cog = sec.querySelector(`#sub-${slug(z)}-test-de-cognition`);
-    if (cog) {
-      const cs = gatherChecked(cog.querySelectorAll("input:checked"));
-      if (cs.length) text += `\n→ Test de cognition : ${cs.join(", ")}\n`;
-    }
+    // --- Cognition
+    const cog = sec.querySelector(`#sub-${slug(zone)}-test-de-cognition`);
+    if (cog) zoneData.cognition = gatherChecked(cog.querySelectorAll("input:checked"));
 
-    // AUTRES DONNÉES
-    const od = sec.querySelector(`#sub-${slug(z)}-autres-donnees`);
+    // --- Autres données
+    const od = sec.querySelector(`#sub-${slug(zone)}-autres-donnees`);
     if (od) {
       const t = od.querySelector("input")?.value.trim();
-      if (t) text += `\n→ Autres données : ${t}\n`;
+      if (t) zoneData.autres_donnees.push(t);
     }
 
-    text += `\n`;
+    payload.zones_details.push(zoneData);
   });
 
-  return text.trim();
+  // Globaux
+  const gb = {};
+  const jumps = byId("global-jumps");
+  if (jumps) {
+    gb.sauts = { fait: gatherRadio(jumps) };
+    if (gb.sauts.fait === "Oui") {
+      const groups = jumps.querySelectorAll("#jumps-detail .checkbox-group");
+      gb.sauts.tests = gatherChecked(groups[0]);
+      gb.sauts.params = gatherChecked(groups[1]);
+      gb.sauts.outils = gatherChecked(groups[2]);
+      gb.sauts.criteres = gatherChecked(groups[3]);
+    }
+  }
+
+  const course = byId("global-course");
+  if (course) {
+    gb.course = { fait: gatherRadio(course) };
+    if (gb.course.fait === "Oui") {
+      const groups = course.querySelectorAll("#course-detail .checkbox-group");
+      gb.course.tests_ener = gatherChecked(groups[0]);
+      gb.course.tests_vit = gatherChecked(groups[1]);
+      gb.course.tests_cod = gatherChecked(groups[2]);
+      const dYN = course.querySelector("input[name='decel-yn']:checked")?.value || "";
+      const dText = course.querySelector("#decel-detail .other-input")?.value?.trim() || "";
+      gb.course.deceleration = { fait: dYN, details: (dYN === "Oui") ? dText : "" };
+      gb.course.outils = gatherChecked(groups[4]);
+      gb.course.criteres = gatherChecked(groups[5]);
+    }
+  }
+
+  const mi = byId("global-mi");
+  if (mi) {
+    gb.mi = { fait: gatherRadio(mi) };
+    if (gb.mi.fait === "Oui") {
+      const groups = mi.querySelectorAll("#mi-detail .checkbox-group");
+      gb.mi.tests = gatherChecked(groups[0]);
+      gb.mi.outils = gatherChecked(groups[1]);
+      gb.mi.params = gatherChecked(groups[2]);
+      gb.mi.criteres = gatherChecked(groups[3]);
+    }
+  }
+
+  const ms = byId("global-ms");
+  if (ms) {
+    gb.ms = { fait: gatherRadio(ms) };
+    if (gb.ms.fait === "Oui") {
+      const groups = ms.querySelectorAll("#ms-detail .checkbox-group");
+      gb.ms.tests = gatherChecked(groups[0]);
+      gb.ms.outils = gatherChecked(groups[1]);
+      gb.ms.params = gatherChecked(groups[2]);
+      gb.ms.criteres = gatherChecked(groups[3]);
+    }
+  }
+
+  const combat = byId("global-combat");
+  if (combat) gb.combat = { fait: gatherRadio(combat) };
+  payload.globaux = gb;
+
+  // Questions communes
+  const bar = byId("barrieres");
+  payload.barrieres = gatherChecked(bar);
+  if (bar.querySelector("input[value='Autre']")?.checked) payload.barrieres_autre = byId("barrieres-autre").value.trim();
+  const rai = byId("raisons");
+  payload.raisons = gatherChecked(rai);
+  if (rai.querySelector("input[value='Autre']")?.checked) payload.raisons_autre = byId("raisons-autre").value.trim();
+
+  return payload;
 };
 
-/* =============================================
- * VALIDATION + ENVOI GOOGLE FORM
- * ============================================= */
-submitBtn.addEventListener("click", async (e) => {
-  e.preventDefault();
-  resultMsg.textContent = "";
 
-  const err = validate();
-  if (err) {
-    resultMsg.style.color = "#d11c1c";
-    resultMsg.textContent = "⚠️ " + err;
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    return;
-  }
+const validate = () => {
+if (!byId("nom").value.trim() || !byId("prenom").value.trim()) return "Merci de renseigner Nom et Prénom.";
+const role = document.querySelector("input[name='role']:checked");
+if (!role) return "Merci d’indiquer votre rôle.";
+if (role.value==="Autre" && byId("role-autre").style.display!=="none" && !byId("role-autre").value.trim()) return "Merci de préciser votre rôle.";
+const eq = document.querySelector("input[name='equipe']:checked");
+if (!eq) return "Merci d’indiquer l’équipe.";
+if (eq.value==="Autre" && byId("equipe-autre").style.display!=="none" && !byId("equipe-autre").value.trim()) return "Merci de préciser l’équipe.";
 
-  // texte final
-  let text = buildPayload();
+if (selectedZones().length===0) return "Merci de sélectionner au moins une zone anatomique.";
 
-  // ⚠️ Garde-fou longueur : si ton champ est "Réponse courte", Google coupe/rejette.
-  // Mets de préférence un champ "Paragraphe" côté Form. A défaut, on tronque prudemment.
-  const MAX_LEN = 18000; // paragraphe supporte ~20k, on garde marge
-  if (text.length > MAX_LEN) {
-    text = text.slice(0, MAX_LEN - 30) + "\n[...tronqué...]";
-  }
+// champs "Autre" visibles
+const others = $$(".other-wrap input.other-input");
+for (const t of others) {
+if (requiredIfVisible(t) && !t.value.trim()) return "Merci de préciser les champs 'Autre' sélectionnés.";
+}
+// Communes
+const barAutreCb = byId("barrieres")?.querySelector("input[value='Autre']");
+if (barAutreCb && barAutreCb.checked && !byId("barrieres-autre").value.trim()) return "Merci de préciser les champs 'Autre' sélectionnés.";
+const raiAutreCb = byId("raisons")?.querySelector("input[value='Autre']");
+if (raiAutreCb && raiAutreCb.checked && !byId("raisons-autre").value.trim()) return "Merci de préciser les champs 'Autre' sélectionnés.";
 
-  // Encodage en x-www-form-urlencoded (plus compatible que FormData ici)
-  const params = new URLSearchParams();
-  params.append(GOOGLE_ENTRY_KEY, text);
-  // Petits champs usuels tolérés par Forms (pas obligatoires mais aident certaines configs)
-  params.append("fvv", "1");
-  params.append("pageHistory", "0");
-  // params.append("submit", "Submit"); // facultatif
+return "";
+};
 
-  try {
-    await fetch(GOOGLE_FORM_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-      body: params.toString(),
-      mode: "no-cors",
-    });
+submitBtn.addEventListener("click", async (e)=>{
+e.preventDefault();
+resultMsg.textContent="";
+const err = validate();
+if (err){
+resultMsg.style.color = "#d11c1c";
+resultMsg.textContent = "⚠️ " + err;
+window.scrollTo({top:0,behavior:"smooth"});
+return;
+}
 
-    resultMsg.style.color = "#0a7f2e";
-    resultMsg.textContent = "✅ Merci, vos réponses ont été enregistrées.";
+const payload = buildPayload();
+const fd = new FormData();
+fd.append(GOOGLE_ENTRY_KEY, JSON.stringify(payload));
 
-    form.reset();
-    byId("zoneQuestions").innerHTML = "";
-    byId("globalsSection").style.display = "none";
-    byId("globalBlocks").innerHTML = "";
-    updateProgress();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } catch (err) {
-    resultMsg.style.color = "#d11c1c";
-    resultMsg.textContent = "⚠️ Erreur d’envoi. Vérifiez votre connexion et réessayez.";
-    console.error("Erreur envoi Google Form:", err);
-  }
+try{
+await fetch(GOOGLE_FORM_URL, {method:"POST",mode:"no-cors",body:fd});
+resultMsg.style.color = "#0a7f2e";
+resultMsg.textContent = "✅ Merci, vos réponses ont été enregistrées.";
+form.reset();
+byId("zoneQuestions").innerHTML = "";
+byId("globalsSection").style.display="none";
+byId("globalBlocks").innerHTML = "";
+jumpsBlock = courseBlock = globalMIBlock = globalMSBlock = combatBlock = null;
+updateProgress();
+window.scrollTo({top:0,behavior:"smooth"});
+}catch(err){
+resultMsg.style.color = "#d11c1c";
+resultMsg.textContent = "⚠️ Erreur d’envoi. Vérifiez votre connexion et réessayez.";
+}
 });
 
 /* ---------------------------------------------

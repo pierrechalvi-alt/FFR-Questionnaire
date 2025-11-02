@@ -1260,14 +1260,19 @@ submitBtn.addEventListener("click", async (e) => {
   // --- Construction du payload JSON ---
   const payload = buildPayload();
 
- // --- Encodage pour Google Form ---
-const params = new URLSearchParams();
-const textPayload = JSON.stringify(payload, null, 2)   // JSON formaté
-  .replace(/&/g, "%26")                               // échappage caractères spéciaux
-  .replace(/=/g, "%3D")
-  .replace(/\+/g, "%2B");
-params.append(GOOGLE_ENTRY_KEY, textPayload);
+// --- Encodage pour Google Form (version stable) ---
+const textPayload = JSON.stringify(payload, null, 2);
+const formBody = `${GOOGLE_ENTRY_KEY}=${encodeURIComponent(textPayload)}`;
 
+try {
+  await fetch(GOOGLE_FORM_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+    },
+    body: formBody,
+    mode: "no-cors",
+  });
 
   try {
     await fetch(

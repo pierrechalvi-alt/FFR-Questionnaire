@@ -1047,11 +1047,12 @@ toggleGlobalsBlock();
 });
 
 /* ---------------------------------------------
- * VALIDATION + ENVOI GOOGLE FORM (version finale stable)
+ * VALIDATION + ENVOI GOOGLE FORM (robuste)
  * ------------------------------------------- */
 const resultMsg = byId("resultMessage");
 const submitBtn = byId("submitBtn");
-const GOOGLE_FORM_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSeNok3wNrafUFIM2VnAo4NKQpdZDaDyFDeVS8dZbXFyt_ySyA/formResponse";
+// ⚠️ URL SANS /u/0
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeNok3wNrafUFIM2VnAo4NKQpdZDaDyFDeVS8dZbXFyt_ySyA/formResponse";
 const GOOGLE_ENTRY_KEY = "entry.1237244370";
 
 /* =============================================
@@ -1169,12 +1170,32 @@ submitBtn.addEventListener("click", async (e) => {
     return;
   }
 
-  const text = buildPayload();
-  const fd = new FormData();
-  fd.append(GOOGLE_ENTRY_KEY, text);
+  // texte final
+  let text = buildPayload();
+
+  // ⚠️ Garde-fou longueur : si ton champ est "Réponse courte", Google coupe/rejette.
+  // Mets de préférence un champ "Paragraphe" côté Form. A défaut, on tronque prudemment.
+  const MAX_LEN = 18000; // paragraphe supporte ~20k, on garde marge
+  if (text.length > MAX_LEN) {
+    text = text.slice(0, MAX_LEN - 30) + "\n[...tronqué...]";
+  }
+
+  // Encodage en x-www-form-urlencoded (plus compatible que FormData ici)
+  const params = new URLSearchParams();
+  params.append(GOOGLE_ENTRY_KEY, text);
+  // Petits champs usuels tolérés par Forms (pas obligatoires mais aident certaines configs)
+  params.append("fvv", "1");
+  params.append("pageHistory", "0");
+  // params.append("submit", "Submit"); // facultatif
 
   try {
-    await fetch(GOOGLE_FORM_URL, { method: "POST", mode: "no-cors", body: fd });
+    await fetch(GOOGLE_FORM_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body: params.toString(),
+      mode: "no-cors",
+    });
+
     resultMsg.style.color = "#0a7f2e";
     resultMsg.textContent = "✅ Merci, vos réponses ont été enregistrées.";
 
@@ -1187,9 +1208,9 @@ submitBtn.addEventListener("click", async (e) => {
   } catch (err) {
     resultMsg.style.color = "#d11c1c";
     resultMsg.textContent = "⚠️ Erreur d’envoi. Vérifiez votre connexion et réessayez.";
+    console.error("Erreur envoi Google Form:", err);
   }
 });
-
 
 /* ---------------------------------------------
 * INIT : "Autre" commun + progression

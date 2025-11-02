@@ -1334,7 +1334,29 @@ return;
 
 const payload = buildPayload();
 const fd = new FormData();
-fd.append(GOOGLE_ENTRY_KEY, JSON.stringify(payload));
+
+// ✅ conversion JSON → texte lisible (clé:valeur / séparateurs)
+const flatten = (obj, prefix = "") => {
+  let res = {};
+  for (let k in obj) {
+    const val = obj[k];
+    const key = prefix ? `${prefix}.${k}` : k;
+    if (Array.isArray(val)) {
+      res[key] = val.join(", ");
+    } else if (typeof val === "object" && val !== null) {
+      Object.assign(res, flatten(val, key));
+    } else {
+      res[key] = val;
+    }
+  }
+  return res;
+};
+
+const flat = flatten(payload);
+
+// Envoi en un seul champ texte JSON lisible
+fd.append(GOOGLE_ENTRY_KEY, JSON.stringify(flat, null, 2));
+
 
 try{
 await fetch(GOOGLE_FORM_URL, {method:"POST",mode:"no-cors",body:fd});

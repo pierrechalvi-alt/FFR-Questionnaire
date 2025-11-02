@@ -1260,9 +1260,14 @@ submitBtn.addEventListener("click", async (e) => {
   // --- Construction du payload JSON ---
   const payload = buildPayload();
 
-  // --- Encodage pour Google Form ---
-  const params = new URLSearchParams();
-  params.append(GOOGLE_ENTRY_KEY, JSON.stringify(payload));
+ // --- Encodage pour Google Form ---
+const params = new URLSearchParams();
+const textPayload = JSON.stringify(payload, null, 2)   // JSON formaté
+  .replace(/&/g, "%26")                               // échappage caractères spéciaux
+  .replace(/=/g, "%3D")
+  .replace(/\+/g, "%2B");
+params.append(GOOGLE_ENTRY_KEY, textPayload);
+
 
   try {
     await fetch(

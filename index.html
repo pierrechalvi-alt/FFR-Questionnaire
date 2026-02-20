@@ -20,41 +20,27 @@
     <div id="progress-text">Progression : 0%</div>
   </div>
 
-  <form id="questionnaireForm">
-    <!-- SECTION 1 : Informations générales -->
-    <section class="card fade-in">
-      <h2>Informations sur le participant</h2>
+  <section class="card fade-in">
+  <h2>Informations sur la structure</h2>
 
-      <div class="grid-2">
-        <div>
-          <label>Nom <span class="req">*</span></label>
-          <input type="text" id="nom" required>
-        </div>
-        <div>
-          <label>Prénom <span class="req">*</span></label>
-          <input type="text" id="prenom" required>
-        </div>
-      </div>
+  <label for="club">Club concerné <span class="req">*</span></label>
+  <input type="text" id="club" name="club" placeholder="Nom du club" required>
 
-      <label>Quel est votre rôle au sein de la structure ? <span class="req">*</span></label>
-      <div class="checkbox-group" id="role">
-        <label><input type="radio" name="role" value="Médecin"> Médecin</label>
-        <label><input type="radio" name="role" value="Kinésithérapeute"> Kinésithérapeute</label>
-        <label><input type="radio" name="role" value="Préparateur physique"> Préparateur physique</label>
-        <input type="text" class="other-input small" id="role-autre" placeholder="Précisez" style="display:none;">
-      </div>
-
-      <label>Auprès de quelle équipe intervenez-vous ? <span class="req">*</span></label>
-      <div class="checkbox-group" id="equipe">
-        <label><input type="radio" name="equipe" value="XV masculin"> XV masculin</label>
-        <label><input type="radio" name="equipe" value="XV féminin"> XV féminin</label>
-        <label><input type="radio" name="equipe" value="7 masculin"> 7 masculin</label>
-        <label><input type="radio" name="equipe" value="7 féminin"> 7 féminin</label>
-        <label><input type="radio" name="equipe" value="-20 masculin"> -20 masculin</label>
-        <label><input type="radio" name="equipe" value="-20 féminin"> -20 féminin</label>
-        <input type="text" class="other-input small" id="equipe-autre" placeholder="Précisez" style="display:none;">
-      </div>
-    </section>
+  <label>Niveau de compétition <span class="req">*</span></label>
+  <div class="checkbox-group">
+    <label>
+      <input type="radio" name="niveau" value="Top 14" required>
+      Top 14
+    </label>
+    <label>
+      <input type="radio" name="niveau" value="Pro D2">
+      Pro D2
+    </label>
+    <label>
+      <input type="radio" name="niveau" value="Elite 1">
+      Élite 1
+    </label>
+  </div>
 
     <!-- SECTION 2 : Zones anatomiques -->
     <section class="card fade-in">

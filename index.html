@@ -24,6 +24,10 @@
 <section class="card fade-in">
   <h2>Informations sur la structure</h2>
 
+  <p class="info-text" style="margin-bottom:15px; font-style:italic;">
+    Ce questionnaire est rempli conjointement par le staff médical et performance.
+  </p>
+
   <label for="club">Club concerné <span class="req">*</span></label>
   <input type="text" id="club" name="club" placeholder="Nom du club" required>
 
@@ -43,36 +47,31 @@
     </label>
   </div>
 
-  <div class="checkbox-group" style="margin-top: 10px;">
-    <label>
-      <input type="checkbox" id="reponse_collective" name="reponse_collective" value="Oui">
-      Ce questionnaire est rempli conjointement par le staff médical et performance
-    </label>
-  </div>
-
-  <h3>Préparateur physique</h3>
+  <h3>Préparateur physique <span class="req">*</span></h3>
   <div class="grid-2">
     <div>
-      <label for="prep_nom">Nom</label>
-      <input type="text" id="prep_nom" name="prep_nom" placeholder="Nom du préparateur">
+      <label for="prep_nom">Nom <span class="req">*</span></label>
+      <input type="text" id="prep_nom" name="prep_nom" placeholder="Nom du préparateur" required>
     </div>
     <div>
-      <label for="prep_prenom">Prénom</label>
-      <input type="text" id="prep_prenom" name="prep_prenom" placeholder="Prénom du préparateur">
+      <label for="prep_prenom">Prénom <span class="req">*</span></label>
+      <input type="text" id="prep_prenom" name="prep_prenom" placeholder="Prénom du préparateur" required>
     </div>
   </div>
 
-  <h3>Kiné</h3>
+  <h3>Kiné <span class="req">*</span></h3>
   <div class="grid-2">
     <div>
-      <label for="kine_nom">Nom</label>
-      <input type="text" id="kine_nom" name="kine_nom" placeholder="Nom du kiné">
+      <label for="kine_nom">Nom <span class="req">*</span></label>
+      <input type="text" id="kine_nom" name="kine_nom" placeholder="Nom du kiné" required>
     </div>
     <div>
-      <label for="kine_prenom">Prénom</label>
-      <input type="text" id="kine_prenom" name="kine_prenom" placeholder="Prénom du kiné">
+      <label for="kine_prenom">Prénom <span class="req">*</span></label>
+      <input type="text" id="kine_prenom" name="kine_prenom" placeholder="Prénom du kiné" required>
     </div>
   </div>
+
+</section>
 
     <!-- SECTION 2 : Zones anatomiques -->
     <section class="card fade-in">
